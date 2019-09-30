@@ -103,7 +103,6 @@ Description: List compliance rulesets
 Command: `.\dome9cli.py list_rulesets`  
 
 
-####  run_assessme  
-  Description: Run assessment and get report URL
-  
-Command: `.\dome9cli.py run_assessment rulesetId=0, cloudAccountId=0000-0000-0000-0000`
+####  run_assessment  
+Description: Run assessment and get report URL  
+Command: `.\dome9cli.py run_assessment rulesetId=0, cloudAccountId=0000-0000-0000-0000`  
