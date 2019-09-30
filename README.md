@@ -9,25 +9,23 @@ that allows teams to work comfortably with Dome9, isolating themselves from the 
 
 These are the 3 components developed by us:
 
-* Dome9 SDK
-* Dome9 CLI
-* Dome9 Agile
+* **Dome9 SDK**
+* **Dome9 CLI**
+* **Dome9 Agile**
 
 
 ## Dome9 SDK
 
-This python package is a temporary development waiting for Dome9 to incorporate new functionalities in 
-its official SDK for Python ([see here](https://github.com/dome9/python-api-sdk)). Through this package we can interact and
-interconnect our services with Dome9.
+![PyPI](https://img.shields.io/pypi/v/dome9) | [Repository](https://github.com/davidmoremad/dome9/) | [Documentation](http://dome9.readthedocs.io/) | [Pypi](https://pypi.org/project/dome9/)
 
-- Repository: https://github.com/davidmoremad/dome9
-- Documentation: http://dome9.readthedocs.io/?badge=latest
-- Installation: `pip install dome9`
+This python package is a temporary development of CDO Telefonica waiting for Dome9 to incorporate new functionalities in 
+its [official Dome9 SDK for Python](https://github.com/dome9/python-api-sdk). Through this package we can interact with 
+our Dome9 account and connect it to our internal services.
+This package has been registered on Pypi repository so you just have to install it running `pip install dome9` on your preferred console.
 
 Usage:
 ```python
     import dome9
-
     d9 = dome9.Dome9(key='xxxxxx', secret='yyyyyyy')
     rulesets = d9.list_rulesets()
 ```
@@ -35,12 +33,15 @@ Usage:
 
 ## Dome9 CLI
 
-This Command Line Interface is a simple tool that facilitates the daily use and helps enormously to work in agile methodologies.
-This package consumes calls through the SDK mentioned above so it contains the same calls.
+[Repository & Documentation](https://github.com/Telefonica/Dome9/tree/master/cli)
 
-- Repository: https://github.com/davidmoremad/dome9cli
-- Documentation: https://github.com/davidmoremad/dome9cli
-- Installation: `pip install --user dome9cli`
+This Command Line Interface (CLI) is a simple tool that facilitates the daily use and helps enormously to work in agile methodologies.
+This package consumes calls through the Dome9 Python SDK mentioned above so it contains the same methods.
+
+This CLI helps to work on Dome9 from our different agile services like Jenkins, Github or Travis, creating new rulesets, running
+assessments or getting protected assets. You only need to download the script stored on `./cli/` folder and launch it with `./dome9cli.py --help`
+If you want to use it in any path or just typing `dome9`, you have to add the absolute path to your `PATH` environment variable. It will be
+automated soon. 
 
 Usage:
 ```bash
@@ -51,9 +52,12 @@ Usage:
 
 ## Dome9 Agile
 
+[Repository & Documentation](https://github.com/Telefonica/Dome9/tree/master/agile)
+
 Through this simple script and the CLI we are able to create rulesets dinamically using templates.
-The purpose of this tool is to have just one master file of rules for each cloud environment (AWS, Azure, GCP & Kubernetes)
+The purpose of this tool is to have just a unique file of rules for each cloud environment (AWS, Azure, GCP & Kubernetes)
 and create different kind of rulesets based on those rule files.
+In this way, every team are able to use its own rulesets with specific tests on their environment.
 
 Usage:
 ```bash
