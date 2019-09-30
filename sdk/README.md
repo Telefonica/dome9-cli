@@ -55,3 +55,9 @@ results = d9.run_assessment(rulesetId=ruleset['id'], cloudAccountId=cloudAccount
 ruleset = d9.delete_ruleset(ruleset['id'])
 
 ```
+
+
+---
+
+_CDO Telefonica_
+_Copyright (c) Telefonica Digital España, 2019_

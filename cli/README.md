@@ -106,3 +106,8 @@ Command: `.\dome9cli.py list_rulesets`
 ####  run_assessment  
 Description: Run assessment and get report URL  
 Command: `.\dome9cli.py run_assessment rulesetId=0, cloudAccountId=0000-0000-0000-0000`  
+
+---
+
+_CDO Telefonica_
+_Copyright (c) Telefonica Digital España, 2019_

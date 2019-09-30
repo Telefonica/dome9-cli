@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+This script is used to split a master ruleset file
+in different files based on audit type or use case.
 
-"""As a simple example of Python Fire, a Widget serves no clear purpose."""
+Copyright (c) Telefonica Digital España, 2019
+"""
 
 import os
 import fire

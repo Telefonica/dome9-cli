@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+This script is a simple tool that facilitates the daily 
+use and helps enormously to work in agile methodologies.
+This package consumes calls through the Dome9 Python SDK 
+mentioned above so it contains the same methods.
+
+Copyright (c) Telefonica Digital España, 2019
+"""
 import sys
 import fire
 import json

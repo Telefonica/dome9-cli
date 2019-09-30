@@ -83,4 +83,7 @@ Example
     - azure
 ```
 
-## 
+---
+
+_CDO Telefonica_
+_Copyright (c) Telefonica Digital España, 2019_
