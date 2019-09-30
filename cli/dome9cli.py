@@ -11,7 +11,7 @@ class Dome9CLI():
 	_tablefmt = 'github'
 
 	def __init__(self):
-		self.dome9 = dome9.Dome9SDK()
+		self._dome9 = dome9.Dome9()
 
 
 	# 	SYSTEM METHODS
@@ -35,19 +35,41 @@ class Dome9CLI():
 	# ---------------------
 
 	def list_aws_accounts(self):
-		data = self.dome9.list_aws_accounts()
+		'''List AWS Cloud accounts
+		'''
+		data = self._dome9.list_aws_accounts()
 		self._pprint(data, ['id', 'name'])
 
 	def list_azure_accounts(self):
-		data = self.dome9.list_azure_accounts()
+		'''List Azure Cloud accounts
+		'''
+		data = self._dome9.list_azure_accounts()
+		self._pprint(data, ['id', 'name'])
+
+	def list_google_accounts(self):
+		'''List Google Cloud accounts
+		'''
+		data = self._dome9.list_google_accounts()
+		self._pprint(data, ['id', 'name'])
+
+	def list_kubernetes_accounts(self):
+		'''List Kubernetes accounts
+		'''
+		data = self._dome9.list_kubernetes_accounts()
 		self._pprint(data, ['id', 'name'])
 
 	def list_cloud_accounts(self):
-		data = self.dome9.list_cloud_accounts()
+		'''List all cloud accounts (AWS, Azure, GCP and Kubernetes)
+		'''
+		data = self._dome9.list_cloud_accounts()
 		self._pprint(data, ['id', 'name'])
 
 	def get_cloud_account(self, id):
-		data = self.dome9.get_cloud_account(id)
+		'''Get a specific cloud account
+		Args:
+			id (str): Id of the cloud account
+		'''
+		data = self._dome9.get_cloud_account(id)
 		self._pprint([data], ['id', 'name'])
 
 
@@ -55,23 +77,45 @@ class Dome9CLI():
 	# ---------------------
 
 	def list_rulesets(self):
-		data = self.dome9.list_rulesets()
+		'''List compliance rulesets
+		'''
+		data = self._dome9.list_rulesets()
 		self._pprint(data, ['id', 'cloudVendor', 'name'])
 		
 	def get_ruleset(self, id):
-		data = self.dome9.get_ruleset(id)
+		'''Get a specific compliance ruleset
+		Args:
+			id (int): Id of the ruleset
+		'''
+		data = self._dome9.get_ruleset(id)
 		self._pprint([data], ['id', 'cloudVendor', 'name', 'createdTime', 'updatedTime'])
 
 	def create_ruleset(self, jsonFile):
+		'''Create a compliance ruleset
+		Args:
+			jsonFile (str): Absolute or relative path to a JSON file with the ruleset
+		'''
 		ruleset = self._read_file(jsonFile)
-		data = self.dome9.create_ruleset(ruleset)
+		data = self._dome9.create_ruleset(ruleset)
 		print('Ruleset create with ID: {}'.format(data['id']))
 
 	def delete_ruleset(self, id):
-		data = self.dome9.delete_ruleset(id)
+		'''Delete a specific ruleset
+		Args:
+			id (int): Id of the ruleset
+		'''
+		data = self._dome9.delete_ruleset(id)
 		print('Ruleset deleted') if data else ('Resource not deleted')
 
 	def generate_ruleset(self, name, cloud, rulesFile=None, desc=''):
+		'''Generate a ruleset template
+		
+		Args:
+			cloud (str): Name of the cloud vendor. Accepted values: [aws, azure, google, kubernetes]
+			name (str): Name of the ruleset
+			desc (str, optional): Description of the ruleset. Defaults to ''.
+			rulesFile (str, optional): Absolute or relative path to a JSON file with Dome9 rules. Defaults to None.
+		'''
 		rules = []
 		if rulesFile:
 			rules.extend(json.loads(self._read_file(rulesFile)))
@@ -92,11 +136,17 @@ class Dome9CLI():
 	# ---------------------
 
 	def list_remediations(self):
-		data = self.dome9.list_remediations()
+		'''List all remediations
+		'''
+		data = self._dome9.list_remediations()
 		self._pprint(data, ['id', 'ruleName', 'cloudBots'])
 
 	def delete_remediation(self, id):
-		data = self.dome9.delete_remediation(id)
+		'''Delete a specific remediation
+		Args:
+			id (id): Id of the remediation
+		'''
+		data = self._dome9.delete_remediation(id)
 		print('Remediation deleted') if data else ('Resource not deleted')
 
 
@@ -104,24 +154,31 @@ class Dome9CLI():
 	# ---------------------
 
 	def list_exclusions(self):
-		data = self.dome9.list_exclusions()
+		'''List all exclusions
+		'''
+		data = self._dome9.list_exclusions()
 		self._pprint(data, ['id', 'cloudAccountId', 'logic', 'comment'])
 
 	def delete_exclusion(self, id):
-		data = self.dome9.delete_exclusion(id)
+		'''Delete a specific exclusion
+		Args:
+			id (id): Id of the exclusion
+		'''
+		data = self._dome9.delete_exclusion(id)
 		print('Exclusion deleted') if data else ('Resource not deleted')
 
 
 	# 	ASSESSMENTS
 	# ---------------------
 
-	# def generate_template(self, rulesetId, cloudAccountId):
-	# 	data = self.dome9.generate_assessment_template(rulesetId, cloudAccountId)
-	# 	print(data)
-	# 	self._pprint([data], ['id', 'name'])
-
 	def run_assessment(self, rulesetId, cloudAccountId):
-		data = self.dome9.run_assessment(rulesetId, cloudAccountId)
+		"""Run assessment and get report URL
+		
+		Args:
+			rulesetId (int): ID of the ruleset
+			cloudAccountId (str): ID of the cloud account which will be scanned
+		"""
+		data = self._dome9.run_assessment(rulesetId, cloudAccountId)
 		if data:
 			print('See report on: https://secure.dome9.com/v2/compliance-engine/result/%s' % data['id'])
 
