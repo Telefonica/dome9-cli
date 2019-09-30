@@ -16,7 +16,7 @@ These are the 3 components developed by us:
 
 ## Dome9 SDK
 
-![PyPI](https://img.shields.io/pypi/v/dome9) | [Repository](https://github.com/davidmoremad/dome9/) | [Documentation](http://dome9.readthedocs.io/) | [Pypi](https://pypi.org/project/dome9/)
+[Repository](https://github.com/davidmoremad/dome9/) | [Documentation](http://dome9.readthedocs.io/) | [Pypi](https://pypi.org/project/dome9/)
 
 This python package is a temporary development of CDO Telefonica waiting for Dome9 to incorporate new functionalities in 
 its [official Dome9 SDK for Python](https://github.com/dome9/python-api-sdk). Through this package we can interact with 
