@@ -1,0 +1,25 @@
+{
+    "name": "string",
+    "description": "string",
+    "rules": [
+        {
+            "name": "string",
+            "severity": "Low",
+            "logic": "string",
+            "description": "string",
+            "remediation": "string",
+            "complianceTag": "string",
+            "domain": "string",
+            "priority": "string",
+            "controlTitle": "string",
+            "ruleId": "string",
+            "logicHash": "string",
+            "isDefault": true
+        }
+    ],
+    "id": 0,
+    "hideInCompliance": true,
+    "minFeatureTier": "Trial",
+    "cloudVendor": "aws",
+    "language": "string"
+}

@@ -1,0 +1,273 @@
+-
+    name: 'Ensure that ''Data encryption'' is set to ''On'' for Azure SQL Database'
+    description: 'Encrypt SQL Databases. Azure SQL Database transparent data encryption helps protect against the threat of malicious activity by performing real-time encryption and decryption of the database, associated backups, and transaction log files at rest without requiring changes to the application.'
+    severity: High
+    logic: 'SQLDB should have encryption.status=''Enabled'''
+    remediation: "Remediation:\nAzure Console\n1. Go to SQL databases\n2. For each DB instance\n3. Click on Transparent data encryption\n4. Set Data encryption to On\n\nDefault Value:\nBy default, Data encryption is set to On.\nReferences:\nhttps://docs.microsoft.com/en-us/sql/relational-databases/security/encryption/transparent-data-encryption-with-azure-sql-database"
+    complianceTag: 'Encryption and Key Management'
+-
+    name: 'Ensure that ''Public access level'' is set to Private for blob containers'
+    description: 'Disable anonymous access to blob containers. It is recommended to not provide anonymous access to blob containers unless it is absolutely necessary. You should use shared access signature token for providing controlled and timed access to blob containers. When you permit anonymous, public read access to a container and its blobs in Azure Blob storage, you can grant read-only access to these resources without sharing your account key, and without requiring a shared access signature. '
+    severity: High
+    logic: 'StorageAccount should not have networkRuleSet.defaultAction=''allow'' and networkRuleSet.ipRules isPublic()'
+    remediation: "Azure Console:\nFirst, follow Microsoft documentation and created shared access signature tokens for your\nblob containers. Then,\n1. Go to Storage Accounts\n2. For each storage account, go to Containers under BLOB SERVICE\n3. For each container, click Access policy\n4. Set Public access level to Private (no anonymous access)\n\nDefault Value:\nBy default, Public access level is set to Private (no anonymous access) for blob\ncontainers.\n\nReferences:\nhttps://docs.microsoft.com/en-us/azure/storage/blobs/storage-manage-access-toresources"
+    complianceTag: 'Network Security'
+-
+    name: 'Ensure that ''Secure transfer required'' is enabled for Storage Accounts'
+    description: 'Enable secure transfer (encryption) connections. The secure transfer option enhances the security of your storage account by only allowing requests to the storage account by a secure connection. For example, when calling REST APIs to access your storage accounts, you must connect using HTTPs. Any requests using HTTP will be rejected when ''secure transfer required'' is enabled. When you use the Azure files service, connections without encryption will fail, including scenarios using SMB 2.1, SMB 3.0 without encryption, and some flavors of the Linux SMB client. Azure storage does not support HTTPS for custom domain names, so this option is not applied when using a custom domain name.'
+    severity: High
+    logic: 'StorageAccount should have httpsOnlyTraffic=true'
+    remediation: "Azure Console\n1. Go to Storage Accounts\n2. For each storage account, go to Configuration\n3. Set Secure transfer required to Enabled\n\nDefault Value:\nBy default, Secure transfer required is set to Disabled.\n\nReferences:\n1. https://docs.microsoft.com/en-us/azure/storage/storage-security-guide#encryption-in-transit\n2. https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az_storage_account_list\n3. https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az_storage_account_update"
+    complianceTag: 'Encryption and Key Management'
+-
+    name: 'Ensure that SQL server access is restricted from the internet'
+    description: "Ensure that no SQL Databases allow ingress from the internet.\nSQL Database includes a firewall to block access to unauthorized connections. After\ncreating your SQL Database, you can specify which IP addresses can connect to your\ndatabase. You can then define more granular IP addresses by referencing the range of\naddresses available from specific datacenters.\nAllowing ingress for the IP range 0.0.0.0/0 (StartIp of 0.0.0.0 and EndIP of 0.0.0.0) allows\nopen access to any/all traffic potentially making the SQL Database vulnerable to attacks."
+    severity: High
+    logic: 'SQLServer should have isPublic=false'
+    remediation: "Azure Console\n1. Go to SQL servers\n2. For each SQL server\n3. Click on Firewall / Virtual Networks\n4. Ensure that the firewall rules exist, and no rule has\n- Start IP of 0.0.0.0\n- and End IP of 0.0.0.0\n- or other combinations which allows access to wider public IP ranges\n\nDefault Value:\nBy default, no firewall rules are configured.\n\nReferences:\n1. https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-set-database-firewall-rule-azure-sql-database\n2. https://docs.microsoft.com/en-us/powershell/module/azurerm.sql/get-azurermsqlserverfirewallrule?view=azurermps-5.2.0\n3. https://docs.microsoft.com/en-us/powershell/module/azurerm.sql/set-azurermsqlserverfirewallrule?view=azurermps-5.2.0"
+    complianceTag: 'Network Security'
+-
+    name: 'Ensure that at least one Network Security Group is attached to all VMs and subnets that are public'
+    description: 'Attach a Network Security Group to each VM or subnet containing a VM. If no Network Security Group is attached to either the Virtual Machine or the subnet, the VM is not protected and can be accessed from the internet.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics with [ networkSecurityGroup.name=''no-NSG-attached'' and subnet.securityGroup.name=''no-NSG-attached'' ]'
+    remediation: 'Attach a Network Security Group to the Virtual Machine or to the Subnet containing the VM. It is recommended to attach a Security Group to all relevant elements in Azure'
+    complianceTag: 'Network Security'
+-
+    name: 'Ensure that logging for Azure KeyVault is ''Enabled'''
+    description: "Enable AuditEvent logging for Key Vault instances to ensure interactions with key vaults\nare logged and available."
+    severity: High
+    logic: 'KeyVault should have diagnosticSettings contain [ logs length()>0 ]'
+    remediation: "1. Go to Key vaults\n2. For each Key vault\n3. Go to Diagnostic Logs\n4. Click on Turn on diagnostics\n5. Ensure that Archive to a storage account is Enabled\n6. Ensure that AuditEvent is checked and the retention days is set to 180 days or as\nappropriate"
+    complianceTag: 'Encryption and Key Management'
+-
+    name: 'Ensure that outbound traffic in network security groups are restricted and no outbound rule allow 0.0.0.0/0'
+    description: "Network Security groups provide stateful filtering of ingress/egress network traffic to Azure resources. It is recommended that no security group allows unrestricted egress access.\nBe sure that no outbound rule is set to all and destination 0.0.0.0/0."
+    severity: High
+    logic: 'NetworkSecurityGroup should not have outboundRules contain [ protocol = ''All'' and destination = ''0.0.0.0/0'' ]'
+    remediation: "Azure Console:\n1. Navigate to the 'All services'\n2. Navigate to the Networking, and select 'Network security groups'\n3. Select the Network security group to be modified\n4. Under Settings, select 'Outbound security rules' \n5. Select the rule to be modified and edit it to allow only specific IP addresses or protocols"
+    complianceTag: 'Network Security'
+-
+    name: 'Ensure there are no firewall rules allowing unrestricted access to Redis from the Internet'
+    description: "Redis Cache should not allow public access.\nFirewall rules should be configured to allow only private IP addresses."
+    severity: High
+    logic: 'RedisCache should not have firewallRules contain-any [ isPublic=true ]'
+    remediation: "Azure Console:\n1. Go to Redis Cache.\n2. For each Redis Cache:\n3. Select Firewall.\n4. Delete any Rule that has a start and end ip address in the range that are considered to be public ip addresses.\n5. Select Save.\n\nDefault Value:\nNo firewalls rules are set\n\n\nReferences:\nhttps://docs.microsoft.com/en-us/azure/redis-cache/cache-configure#firewall"
+    complianceTag: 'Network Security'
+-
+    name: 'VirtualMachine with administrative service: Remote Desktop (TCP:3389) is exposed to the entire internet'
+    description: 'Administrative access to instances is an attack vector that should be restricted to prevent common exploits. This rule detects network settings that may expose instances to RDP, SSH etc...'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=3389 and destinationPortTo >=3389 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(3389) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(3389) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with administrative service: SSH (TCP:22) is exposed to the entire internet'
+    description: 'Administrative access to instances is an attack vector that should be restricted to prevent common exploits. This rule detects network settings that may expose instances to RDP, SSH etc...'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=22 and destinationPortTo >=22 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(22) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(22) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SSH access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with port (TCP:443) is exposed to the entire internet'
+    description: 'Ports that are sensitive or that may display useful organization/product information should not be publicly accessible (0.0.0.0/0). It is recommended to grant access to the strictest possible ranges.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=443 and destinationPortTo >=443 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(443) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(443) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with port (TCP:80) is exposed to the entire internet'
+    description: 'Ports that are sensitive or that may display useful organization/product information should not be publicly accessible (0.0.0.0/0). It is recommended to grant access to the strictest possible ranges.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=80 and destinationPortTo >=80 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(80) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(80) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''CIFS / SMB'' (TCP:3020) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=3020 and destinationPortTo >=3020 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(3020) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(3020) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''DNS'' (TCP:53) is exposed to the entire internet'
+    description: 'Ports that are sensitive or that may display useful organization/product information should not be publicly accessible (0.0.0.0/0). It is recommended to grant access to the strictest possible ranges.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=53 and destinationPortTo >=53 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(53) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(53) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''Known internal web port'' (TCP:8080) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=8080 and destinationPortTo >=8080 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(8080) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(8080) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''LDAP SSL'' (TCP:636) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=636 and destinationPortTo >=636 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(636) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(636) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''MSSQL Debugger'' (TCP:135) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=135 and destinationPortTo >=135 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(135) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(135) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''MySQL'' (TCP:3306) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=3306 and destinationPortTo >=3306 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(3306) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(3306) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''NetBIOS Name Service'' (TCP:137) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=137 and destinationPortTo >=137 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(137) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(137) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''NetBIOS Name Service'' (UDP:137) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=137 and destinationPortTo >=137 and protocol in (''UDP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(137) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(137) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''NetBios Datagram Service'' (TCP:138) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=138 and destinationPortTo >=138 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(138) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(138) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''NetBios Datagram Service'' (UDP:138) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=138 and destinationPortTo >=138 and protocol in (''UDP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(138) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(138) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''NetBios Session Service'' (TCP:139) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=139 and destinationPortTo >=139 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(139) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(139) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''NetBios Session Service'' (UDP:139) is exposed to a wide public network'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=139 and destinationPortTo >=139 and protocol in (''UDP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(139) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(139) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''Postgres SQL'' (TCP:5432) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=5432 and destinationPortTo >=5432 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(5432) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(5432) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''Postgres SQL'' (UDP:5432) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=5432 and destinationPortTo >=5432 and protocol in (''UDP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(5432) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(5432) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''SMTP'' (TCP:25) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=25 and destinationPortTo >=25 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(25) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(25) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service ''SNMP'' (UDP:161) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=161 and destinationPortTo >=161 and protocol in (''UDP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(161) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(161) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with unencrypted LDAP (TCP:389) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=389 and destinationPortTo >=389 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(389) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(389) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with unencrypted LDAP (UDP:389) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=389 and destinationPortTo >=389 and protocol in (''UDP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(389) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(389) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with unencrypted Mongo (TCP:27017) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=27017 and destinationPortTo >=27017 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(27017) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(27017) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with unencrypted Oracle DB (TCP:1521) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=1521 and destinationPortTo >=1521 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(1521) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(1521) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with unencrypted Oracle DB (TCP:2483) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=2483 and destinationPortTo >=2483 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(2483) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(2483) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with unencrypted Oracle DB (UDP:2483) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: High
+    logic: 'VirtualMachine where isPublic=true should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=2483 and destinationPortTo >=2483 and protocol in (''UDP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(2483) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(2483) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'Ensure that Azure Virtual Machine is assigned to an availability set'
+    description: 'Availability sets ensure that the VMs you deploy on Azure are distributed across multiple isolated hardware clusters. Doing this, ensures that if a hardware or software failure within Azure happens, only a subset of your VMs is impacted and that your overall solution remains available and operational.'
+    severity: Medium
+    logic: 'VirtualMachine should have availabilitySet'
+    remediation: "To assign Azure Virtual Machine to an availability set please refer to the following document:\n\nhttps://docs.microsoft.com/en-us/azure/virtual-machines/windows/manage-availability#configure-multiple-virtual-machines-in-an-availability-set-for-redundancy"
+    complianceTag: 'Backup and Disaster Recovery'
+-
+    name: 'VirtualMachine with service Cassandra (TCP:7001) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: Medium
+    logic: 'VirtualMachine should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=7001 and destinationPortTo >=7001 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(7001) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(7001) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service FTP (TCP:20) is exposed to the entire internet'
+    description: 'Listener ports that are sensitive or can display useful information about the organisation/product must not be accessible to the public (0.0.0.0.0/0). It is recommended to allow access to the strictest possible ranges.'
+    severity: Medium
+    logic: 'VirtualMachine should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=20 and destinationPortTo >=20 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(20) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(20) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service FTP (TCP:21) is exposed to the entire internet'
+    description: 'Listener ports that are sensitive or can display useful information about the organisation/product must not be accessible to the public (0.0.0.0.0/0). It is recommended to allow access to the strictest possible ranges.'
+    severity: Medium
+    logic: 'VirtualMachine should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=21 and destinationPortTo >=21 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(21) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(21) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+-
+    name: 'VirtualMachine with service Known internal web port (TCP:8000) is exposed to the entire internet'
+    description: 'Services and databases store data that may be sensitive, protected by law, subject to regulatory requirements or compliance standards. It is highly recommended that access to data will be restricted to encrypted protocols. This rule detects network settings that may expose data via unencrypted protocol over the public internet or to a too wide local scope.'
+    severity: Medium
+    logic: 'VirtualMachine should not have nics contain-any [networkSecurityGroup.inboundRules contain [ destinationPort<=8000 and destinationPortTo >=8000 and protocol in (''TCP'',''ALL'')] and networkSecurityGroup.inboundRules allowedHostsForPort(8000) >= 4294967296 and subnet.securityGroup.inboundRules allowedHostsForPort(8000) >= 4294967296]'
+    remediation: "Update security group input/entry settings to restrict SMTP access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'

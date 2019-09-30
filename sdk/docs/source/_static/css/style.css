@@ -1,0 +1,94 @@
+/*          Sidebar             */
+/* ---------------------------- */
+
+.wy-nav-side,
+.wy-side-nav-search {
+    background-color: #2E3336;
+}
+
+.wy-menu-vertical a:hover {
+    background-color: #92034a;
+}
+.wy-menu-vertical a.current {
+    background-color: #c00060 !important;
+    color: white !important;
+    border:none !important;
+}
+
+/*          Background          */
+/* ---------------------------- */
+
+.wy-nav-content,
+.wy-nav-content-wrap{
+    background-color: #F3F7F9 !important;
+}
+.wy-nav-content {
+    max-width: 1200px;
+}
+
+
+
+/*           Classes            */
+/* ---------------------------- */
+
+dl.class > dt {
+    background-color: rgba(147, 194, 255, 0.308) !important;
+    width: 100%;
+    padding:20px !important;
+    font-size:18px !important;
+}
+
+dl.class dd {
+    margin-left:0;
+}
+
+dl.function code.descclassname,
+dl.class code.descclassname {
+    display:none;
+}
+
+
+/*           Methods            */
+/* ---------------------------- */
+
+dl.function > dt,
+dl.method > dt {
+    border:none !important;
+    background-color: rgba(255, 147, 201, 0.308) !important;
+    border-top:6px solid rgb(255, 110, 158) !important;
+    border-bottom:1px solid #ddd !important;
+    width: 100% !important;
+    font-size:18px !important;
+    margin:40px 0px 15px 0px !important;
+    padding:20px 10px !important;
+}
+
+dl.function > dt,
+dl.method > dd {
+    margin-left:40px;
+}
+
+.viewcode-link {
+    float:right;
+}
+
+
+/*             Args             */
+/* ---------------------------- */
+
+/* Response object */
+dl.docutils dt{
+    border:none !important;
+    background:none !important;
+    padding: 0px 16px !important;
+}
+dl.docutils dd{
+    padding-left:16px !important;
+}
+
+
+.section h1 {
+    text-transform: capitalize;
+    border-bottom:1px solid #e9e9e9;
+    padding-bottom:10px;
+}

@@ -1,0 +1,8 @@
+# Requirements
+-rrequirements.txt
+twine>=1.11.0
+
+# Documentation
+Sphinx==1.8.5
+sphinx_rtd_theme
+sphinxcontrib.napoleon

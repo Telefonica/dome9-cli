@@ -1,0 +1,55 @@
+- template:
+  type: level
+  name: Minimum
+  desc: Level-based template of minimum and mandatory CDO security controls to avoid security breaches
+  key : minimum
+  env :
+    - aws
+
+- template:
+  type: level
+  name: Medium
+  desc: Level-based template of CDO security controls to ensure a medium level of security
+  key : medium
+  env :
+    - aws
+
+- template:
+  type: level
+  name: Advancedd
+  desc: Level-based template of advanced CDO security controls to ensure a high level of security
+  key : advanced
+  env :
+    - aws
+
+- template:
+  type: type
+  name: Application
+  desc: Type-based template of security controls related to the functionality of the application or product
+  key : application
+  env :
+    - aws
+
+- template:
+  type: type
+  name: Network
+  desc: Type-based template of security controls related to the security of the infraestructure
+  key : network
+  env :
+    - aws
+
+- template:
+  type: type
+  name: Governance
+  desc: Type-based template of security controls related to account access and resource management
+  key : governance
+  env :
+    - aws
+
+- template:
+  type: type
+  name: Cost Savings
+  desc: Type-based template of security controls related to cost control
+  key : costsaving
+  env :
+    - aws

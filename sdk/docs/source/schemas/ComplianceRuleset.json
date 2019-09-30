@@ -1,0 +1,35 @@
+{
+    "rules": [
+        {
+            "name": "string",
+            "severity": "Low",
+            "logic": "string",
+            "description": "string",
+            "remediation": "string",
+            "complianceTag": "string",
+            "domain": "string",
+            "priority": "string",
+            "controlTitle": "string",
+            "ruleId": "string",
+            "logicHash": "string",
+            "isDefault": true
+        }
+    ],
+    "accountId": 0,
+    "createdTime": "2019-09-26T10:55:03Z",
+    "updatedTime": "2019-09-26T10:55:03Z",
+    "id": 0,
+    "name": "string",
+    "description": "string",
+    "isTemplate": true,
+    "hideInCompliance": true,
+    "minFeatureTier": "Trial",
+    "section": 0,
+    "tooltipText": "string",
+    "showBundle": true,
+    "systemBundle": true,
+    "cloudVendor": "aws",
+    "version": 0,
+    "language": "string",
+    "rulesCount": 0
+}

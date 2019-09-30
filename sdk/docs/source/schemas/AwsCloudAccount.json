@@ -1,0 +1,56 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "vendor": "aws",
+  "name": "string",
+  "externalAccountNumber": "string",
+  "error": "string",
+  "isFetchingSuspended": true,
+  "creationDate": "2019-09-26T10:55:03Z",
+  "credentials": {
+    "apikey": "string",
+    "arn": "string",
+    "secret": "string",
+    "iamUser": "string",
+    "type": "UserBased",
+    "isReadOnly": true
+  },
+  "iamSafe": {
+    "awsGroupArn": "string",
+    "awsPolicyArn": "string",
+    "mode": "OptIn",
+    "state": "Enabled",
+    "excludedIamEntities": {
+      "rolesArns": [
+        "string"
+      ],
+      "usersArns": [
+        "string"
+      ]
+    },
+    "restrictedIamEntities": {
+      "rolesArns": [
+        "string"
+      ],
+      "usersArns": [
+        "string"
+      ]
+    }
+  },
+  "netSec": {
+    "regions": [
+      {
+        "region": "us_east_1",
+        "name": "string",
+        "hidden": true,
+        "newGroupBehavior": "ReadOnly"
+      }
+    ]
+  },
+  "magellan": true,
+  "fullProtection": true,
+  "allowReadOnly": true,
+  "organizationalUnitId": "00000000-0000-0000-0000-000000000000",
+  "organizationalUnitPath": "string",
+  "organizationalUnitName": "string",
+  "lambdaScanner": true
+}

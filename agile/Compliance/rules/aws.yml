@@ -1,0 +1,639 @@
+-
+    name: 'EBS Volumes with sensitive data must be encrypted'
+    description: 'Ensure that storage is encrypted by KMS on instances that might host a database or sensitive data.'
+    severity: High
+    logic: 'Instance should have volumes with [kmsKeyId and encrypted=''true'']'
+    remediation: "On the AWS console, configure the filesystem on the instance(s) to be encrypted, using a key that is stored in a file on an S3 bucket (created for this purpose). \nThis involves creating an S3 bucket, with a permissions policy, creating & encrypting an encryption key and storing it in the bucket, and then configuring the instances to use the key to encrypt the filesystems, all from the AWS console.\n\nReferences\nhttps://aws.amazon.com/blogs/security/how-to-protect-data-at-rest-with-amazon-ec2-instance-store-encryption"
+    complianceTag: 'Encryption and Key Management'
+    templates: [network]
+    level: medium
+-
+    name: 'EBS Volumes not used'
+    description: "Checks for EBS volumes that are unattached to instances, for example, if they persist after an EC2 instance has been terminated. It is recommended to review of these volumes regularly, since they may contain sensitive company data, application, infrastructure or users.\nIn addition, removing unattached instances will lower your AWS bill"
+    severity: Medium
+    logic: 'Volume should have attachments contain [ state=''attached'' ]'
+    remediation: "Periodically review EBS volumes. Archive them to Glacier, remove the volume entirely, or reattach them if they were inadvertently orphaned. \n\n1. Navigate to the the AWS console EC2 dashboard \n2. In the navigation pane, select Volumes \n3. Sort using the State column and locate the volumes marked 'available' \n4. Review the volume information (create date, size, status, etc) \n5. Determine if you wish to retain or remove each volume"
+    complianceTag: 'Cost Saving'
+    templates: [governance, costsaving]
+    level: advanced
+-
+    name: 'EC2 Instance with public access to ALL ports'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ scope=''0.0.0.0/0'' and portTo=65535 ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public Uncommon Ports access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port>10000 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public FTP access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port=21 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public MongoDB access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port=27017 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public RDP access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port=3389 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public SSH access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port=22 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public MSSQL Database access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port=1433 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public MySQL Database access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port=3306 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public Oracle Database access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port=1521 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public PostgreSQL Database access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'Instance should not have inboundRules with [ port=5432 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance with public CIFS access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ port=445 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public DNS access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ port=53 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public ElasticSearch access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ port=9200 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public HTTP access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ port=80 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public HTTPS access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ port=443 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public ICMP access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ protocol=''ICMP'' and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public NetBIOS access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ port=139 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public RPC access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ port=135 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instance with public SMTP access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'Instance should not have inboundRules with [ port=25 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'EC2 Instances with Inspector scans in the last 30 days'
+    description: 'AWS Inspector is a security assessment service, used to assess applications for vulnerabilities or deviations from best practices.'
+    severity: Medium
+    logic: 'Instance should have scanners.scans contain [source = ''Inspector'' and startTime after(-30, ''days'') and state in (''COMPLETED'') ]'
+    remediation: "Configure AWS Inspector to run at least once every 30 days.\nWe recommend running Inspector at least once a week.\n\nReferences\nhttps://docs.aws.amazon.com/inspector/latest/userguide/inspector_quickstart.html"
+    complianceTag: 'Vulnerability and Threat Management'
+    templates: [network, application]
+    level: advanced
+-
+    name: 'EC2 Instances without High severity Inspector findings'
+    description: "Are there are instances with high severity inspector findings. Inspector is an AWS service that helps improve the security and compliance of your AWS resources. \nInspector Findings are potential security issues found during the evaluation of selected resources."
+    severity: Medium
+    logic: 'Instance should not have scanners.findings contain-any [ruleSeverity=''High'']'
+    remediation: 'Check for AWS Inspector Findings and resolve them on a timely basis to ensure that your systems are up to date with the latest patches and are configured securely.'
+    complianceTag: 'Vulnerability and Threat Management'
+    templates: [network, application]
+    level: advanced
+-
+    name: 'EC2 Naming Convention'
+    description: 'TAGs are essential elements in AWS, although they are not mandatory, as they allow us to identify resources.'
+    severity: High
+    logic: 'Instance should have name regexMatch /^\w*-\w*-(pro|prod|pre|sec|qa|dev|test)-/ or name regexMatch /^(pro|prod|pre|sec|qa|dev|test)-\w*-\w*-/'
+    remediation: "Set a TAG Name based on the following nomenclature:\n<product>-<country>-<environment>-<usage>\n\nI.e.: latch-es-pro-frontend-01 or latch-es-qa-e2etests-IOS-12\n\nWe also strongly recommend setting other useful tags such as project, product, owner or environment.\n\nReferences\nPlease read the official guide: https://cdo.telefonica.com/redmine/projects/software-engineering/wiki/Tagging_elements"
+    complianceTag: 'Assets Management'
+    templates: [governance]
+    level: medium
+-
+    name: 'EC2 Instance based on AMI not older than 1 year'
+    description: 'Ensure that your existing AWS Amazon Machine Images (AMIs) are not older than 180 days in order to ensure their reliability and to meet security and compliance requirements'
+    severity: Medium
+    logic: 'Instance should have imageDetails.creationDate after(-12, ''months'')'
+    remediation: "To re-create each outdated AMI with an up-to-date software stack.\n\nUsing up-to-date AMIs to launch your EC2 instances brings major benefits to your AWS application stack, maintaining your EC2 deployments secure and reliable. You can go even further and automate your old AMIs update process with AWS Systems Manager or open source tools like Packer and Netflix Animator.\n\nReferences\nhttps://github.com/Netflix/aminator"
+    complianceTag: 'Network Security'
+    templates: [network, governance, application]
+    level: medium
+-
+    name: 'EC2 Public AMI'
+    description: 'One or more AMI exposed to the public internet. It is recommended to not publicly shared with the other AWS accounts in order to avoid sensitive data exposure. If required, AMI images should only be shared with relevant AWS accounts without making them public.'
+    severity: High
+    logic: 'AMI should have isPublic=false'
+    remediation: "Sign in to the AWS Management Console.\n1. Navigate to EC2 dashboard at https://console.aws.amazon.com/ec2/.\n2. In the left navigation panel select IMAGES --> AMIs.\n3. Select the relevant image.\n4. Select the Permissions tab (dashboard bottom panel) and check the current AMI permissions. If the selected image is public, the following status will be displayed on the EC2 dashboard: This image is currently Public.\n5. Repeat steps 3-4 to verify the permissions for the rest of the AMIs available in the current region.\n6. Change the AWS region from the navigation bar and repeat steps 1-5 for the all the regions."
+    complianceTag: 'Identity and Access Management'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'EC2 Instance Age not older than 1 year'
+    description: 'Identify and re-launch any running AWS EC2 instances older than 180 days in order to ensure their reliability. An EC2 instance is not supposed to run indefinitely in the cloud and having too old instances within your AWS your account could increase the risk of potential issues.'
+    severity: Low
+    logic: 'Instance should have launchTime after(-12, ''months'')'
+    remediation: 'Stopping and relaunching your old EC2 instances will reallocate them to different and possibly more reliable underlying hardware (host machine).'
+    complianceTag: 'Network Security'
+    templates: [network, governance, application]
+    level: medium
+-
+    name: 'ELB not used'
+    description: 'It is recommended to delete these ELBs that do not have instances attached to them to reduce AWS cost'
+    severity: Low
+    logic: 'ELB should not have instances isEmpty()'
+    remediation: "1. Log in to the AWS console \n2. In the console, select the specific region \n3. Navigate to EC2 Dashboard \n4. Click 'Load Balancers' and Select the reported ELB \n5. If you want use reported ELB, associate instances to ELB or if you want to delete it, click 'Actions' and Select 'Delete' from the dropdown"
+    complianceTag: 'Cost Saving'
+    templates: [governance, costsaving]
+    level: advanced
+-
+    name: 'ELB not using Weak Ciphers'
+    description: 'Remove insecure ciphers for your ELB Predefined or Custom Security Policy, to reduce the risk of the SSL connection between the client and the load balancer being exploited.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ policies contain [ attributes contain-any [$ in (''DHE-DSS-AES128-SHA'',''CAMELLIA128-SHA'',''EDH-RSA-DES-CBC3-SHA'',''DES-CBC3-SHA'',''ECDHE-RSA-RC4-SHA'',''RC4-SHA'',''ECDHE-ECDSA-RC4-SHA'',''DHE-DSS-AES256-GCM-SHA384'',''DHE-RSA-AES256-GCM-SHA384'',''DHE-RSA-AES256-SHA256'',''DHE-DSS-AES256-SHA256'',''DHE-RSA-AES256-SHA'',''DHE-DSS-AES256-SHA'',''DHE-RSA-CAMELLIA256-SHA'',''DHE-DSS-CAMELLIA256-SHA'',''CAMELLIA256-SHA'',''EDH-DSS-DES-CBC3-SHA'',''DHE-DSS-AES128-GCM-SHA256'',''DHE-RSA-AES128-GCM-SHA256'',''DHE-RSA-AES128-SHA256'',''DHE-DSS-AES128-SHA256'',''DHE-RSA-CAMELLIA128-SHA'',''DHE-DSS-CAMELLIA128-SHA'',''ADH-AES128-GCM-SHA256'',''ADH-AES128-SHA'',''ADH-AES128-SHA256'',''ADH-AES256-GCM-SHA384'',''ADH-AES256-SHA'',''ADH-AES256-SHA256'',''ADH-CAMELLIA128-SHA'',''ADH-CAMELLIA256-SHA'',''ADH-DES-CBC3-SHA'',''ADH-DES-CBC-SHA'',''ADH-RC4-MD5'',''ADH-SEED-SHA'',''DES-CBC-SHA'',''DHE-DSS-SEED-SHA'',''DHE-RSA-SEED-SHA'',''EDH-DSS-DES-CBC-SHA'',''EDH-RSA-DES-CBC-SHA'',''IDEA-CBC-SHA'',''RC4-MD5'',''SEED-SHA'',''DES-CBC3-MD5'',''DES-CBC-MD5'',''RC2-CBC-MD5'',''PSK-AES256-CBC-SHA'',''PSK-3DES-EDE-CBC-SHA'',''KRB5-DES-CBC3-SHA'',''KRB5-DES-CBC3-MD5'',''PSK-AES128-CBC-SHA'',''PSK-RC4-SHA'',''KRB5-RC4-SHA'',''KRB5-RC4-MD5'',''KRB5-DES-CBC-SHA'',''KRB5-DES-CBC-MD5'',''EXP-EDH-RSA-DES-CBC-SHA'',''EXP-EDH-DSS-DES-CBC-SHA'',''EXP-ADH-DES-CBC-SHA'',''EXP-DES-CBC-SHA'',''EXP-RC2-CBC-MD5'',''EXP-KRB5-RC2-CBC-SHA'',''EXP-KRB5-DES-CBC-SHA'',''EXP-KRB5-RC2-CBC-MD5'',''EXP-KRB5-DES-CBC-MD5'',''EXP-ADH-RC4-MD5'',''EXP-RC4-MD5'',''EXP-KRB5-RC4-SHA'',''EXP-KRB5-RC4-MD5'') ] ] ]'
+    remediation: "On the AWS EC2 console, for each instance that failed the rule, navigate to the Load Balancer section, and then the Listener tab. Replace HTTP listeners with HTTPS listeners, and check a security policy. If an existing HTTPS Listener has a security policy based on TLS 1.0 (e.g., 2015), replace it with a policy based on TLS 1.1 or 1.2 (e.g., 2016 or 2017). This will replace weak ciphers with recommended, stronger ciphers. Alternatively, you can select a specific cipher. \n\nLogin to the AWS Management Console. \n- Navigate to EC2 dashboard \n- In the navigation panel, under Load balancing, click Load Balancers. \n- Select your Elastic Load Balancer. \n- Select the Listeners tab from the bottom panel. In the Cipher column of the HTTPS listener, click Change: \nScan the SSL Ciphers section for any insecure / deprecated cipher definitions. \n\nReferences\nhttp://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/elb-security-policy-table.html)"
+    complianceTag: 'Encryption and Key Management'
+    templates: [network]
+    level: advanced
+-
+    name: 'ELB with public FTP access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=21 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'ELB with public MongoDB access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=27017 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'ELB with public RDP access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=3389 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'ELB with public SSH access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=22 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'ELB with public MSSQL Database access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=1433 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'ELB with public MySQL Database access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=3306 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'ELB with public Oracle Database access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=1521 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'ELB with public PostgreSQL Database access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=5432 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'ELB with public CIFS access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=445 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'ELB with public DNS access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=53 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'ELB with public ElasticSearch access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=9200 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'ELB with public NetBIOS access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=139 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'ELB with public RPC access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=135 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'ELB with public SMTP access'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: Medium
+    logic: 'ELB should not have elbListeners with [ instancePort=445 ] and inboundRules with [ port=25 and scope=''0.0.0.0/0'' ]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'RDS Database Multi-AZ'
+    description: 'Ensure that RDS clusters are using Multiple Availability Zone for deployment configurations for high availability and automatic failover support fully managed by AWS'
+    severity: High
+    logic: 'RDS should have isMultiAvailabilityZone'
+    remediation: "Update RDS clusters configuration and enable Multi-AZ deployment.\nYou can see the status of Multi-AZ in RDS > Cluster actions > Availability and Durability section > Multi AZ status"
+    complianceTag: 'Backup and Disaster Recovery'
+    templates: [network, application]
+    level: medium
+-
+    name: 'RDS Database with Automated Backups'
+    description: 'Ensure that RDS database instances have automated backups enabled for point-in-time recovery. To back up your database instances, RDS take automatically a full daily snapshot of your data (with transactions logs) during the specified backup window and keeps the backups for a limited period of time (known as retention period) defined by the instance owner.'
+    severity: High
+    logic: 'RDS should have backupRetentionPeriod!=0'
+    remediation: 'Update RDS instances configuration and enable automated backups. We recommend configuring it to be done once a day.'
+    complianceTag: 'Backup and Disaster Recovery'
+    templates: [network, application]
+    level: medium
+-
+    name: 'RDS retention policy is at least 7 days'
+    description: 'RDS clusters should have Retention Policies for Backups configured to retain at least 7 days of backups.'
+    severity: Medium
+    logic: 'RDS should have backupRetentionPeriod>7'
+    remediation: "Configure your RDS backup retention policy to be at least 7 days. \n\n1. Navigate to the the AWS console RDS dashboard. \n2. In the navigation pane, select Instances. \n3. Select the database instance you wish to configure. \n4. From the 'Instance actions' menu, select Modify. \n5. Scroll down to 'Backup Retention' options and set the retention period to at least 7 days. \n6. Click Continue."
+    complianceTag: 'Backup and Disaster Recovery'
+    templates: [network, application]
+    level: medium
+-
+    name: 'RDS Encrypted storage'
+    description: 'Encrypt Amazon RDS instances and snapshots at rest, by enabling the encryption option for your Amazon RDS DB instance.'
+    severity: High
+    logic: 'RDS should have isStorageEncrypted = ''true'' and kmsKeyId'
+    remediation: "On the AWS RDS console, for each RDS instance that failed the rule, enable encryption in the Details section. You can choose to use your default AWS encryption key, or supply an AWS KMS key. \n\nRefer to: http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
+    complianceTag: 'Encryption and Key Management'
+    templates: [network]
+    level: medium
+-
+    name: 'RDS should not be public'
+    description: 'RDS should not be open to a public scope. Firewall and router configurations should be used to restrict connections between untrusted networks and any system components in the cloud environment.'
+    severity: High
+    logic: 'RDS should not have inboundRules with [scope = ''0.0.0.0/0'']'
+    remediation: 'Remove the public interface as well as limit the scope to the VPC; follow AWS guidelines at: http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html'
+    complianceTag: 'Identity and Access Management'
+    templates: [network]
+    level: medium
+-
+    name: 'S3 Bucket should have versioning MFA Delete enabled'
+    description: 'Enabling MFA Delete for versioning is a good way to add extra protection to sensitive files stored in buckets.'
+    severity: High
+    logic: 'S3Bucket should have versioning.mfaDelete=true'
+    remediation: "Using the AWS s3api CLI, enable MFA Delete for the S3 buckets that fail this rule, for example: \naws s3api put-bucket-versioning --bucket bucketname --versioning-configuration Status=Enabled,MFADelete=Enabled --mfa your-mfa-serial-number mfa-code\n\nReferences\nhttps://aws.amazon.com/blogs/security/securing-access-to-aws-using-mfa-part-3"
+    complianceTag: 'Identity and Access Management'
+    templates: [network]
+    level: advanced
+-
+    name: 'S3 Bucket should use encryption for Read actions'
+    description: 'Ensure that S3 Buckets enforce encryption of data transfers using Secure Sockets Layer (SSL) for GetObject action'
+    severity: High
+    logic: 'S3Bucket should have policy.Statement contain [Effect=''Deny'' and Condition.Bool.aws:SecureTransport=''false''] and policy.Statement contain [Action contain [''s3:GetObject''] or Action contain [''s3:*'']]'
+    remediation: "On the AWS S3 console, for each bucket that failed the rule, navigate to the Permissions tab, and then Bucket Policy, and create a policy to deny requests that do not use SSL. You can copy/modify an existing policy, or use the Policy Generator wizard to create a policy step-by-step.\n\nReferences\nhttps://docs.aws.amazon.com/AmazonS3/latest/user-guide/add-bucket-policy.html and https://aws.amazon.com/blogs/security/how-to-use-bucket-policies-and-apply-defense-in-depth-to-help-secure-your-amazon-s3-data/"
+    complianceTag: 'Encryption and Key Management'
+    templates: [network]
+    level: advanced
+-
+    name: 'S3 Bucket should use encryption for Write actions'
+    description: 'Ensure that S3 Buckets only allow data transfers using Secure Sockets Layer (SSL) for PutObject action'
+    severity: High
+    logic: 'S3Bucket should have policy.Statement contain [Effect=''Deny'' and Condition.Bool.aws:SecureTransport=''false''] and policy.Statement contain [Action contain [''s3:PutObject''] or Action contain [''s3:*'']]'
+    remediation: "On the AWS S3 console, for each bucket that failed the rule, navigate to the Permissions tab, and then Bucket Policy, and create a policy to deny requests that do not use SSL. You can copy/modify an existing policy, or use the Policy Generator wizard to create a policy step-by-step.\n\nRefer to: https://docs.aws.amazon.com/AmazonS3/latest/user-guide/add-bucket-policy.html and https://aws.amazon.com/blogs/security/how-to-use-bucket-policies-and-apply-defense-in-depth-to-help-secure-your-amazon-s3-data/"
+    complianceTag: 'Encryption and Key Management'
+    templates: [network]
+    level: advanced
+-
+    name: 'S3 Bucket without Read permissions for anonymous users'
+    description: 'Misconfigured S3 buckets can leak private information to the entire internet or allow unauthorized data tampering / deletion'
+    severity: High
+    logic: 'S3Bucket should not have acl.grants contain [uri = ''http://acs.amazonaws.com/groups/global/AllUsers'' and (premission = ''FULL_CONTROL'' or premission = ''READ'')]'
+    remediation: "In the S3 console, select the Permissions tab, and then Bucket Policy. Remove policies for s3:List* actions for any principals '*'. If necessary, modify the policy instead, to limit the access to specific principals. \nThen, select Access Control List, and remove any grants to List objects to Public (everyone) users."
+    complianceTag: 'Identity and Access Management'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'S3 Bucket without Read permissions for authenticated users'
+    description: 'Ensure that S3 buckets content cannot be listed by AWS authenticated accounts or IAM users in order to protect your S3 data against unauthorized access. An S3 bucket that allows READ (LIST) access to authenticated users will provide AWS accounts or IAM users the ability to list the objects within the bucket and use the information acquired to find objects with misconfigured ACL permissions and exploit them'
+    severity: High
+    logic: 'S3Bucket should not have ( acl.grants contain [uri like ''http://acs.amazonaws.com/groups/global/%''] or policy.Statement contain [Effect=''Allow'' and (Principal=''*'' or Principal.AWS=''*'')])'
+    remediation: 'To remove authenticated READ access to your S3 buckets'
+    complianceTag: 'Identity and Access Management'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'S3 Bucket without Write permissions for anonymous users'
+    description: 'Misconfigured S3 buckets can leak private information to the entire internet or allow unauthorized data tampering / deletion'
+    severity: High
+    logic: 'S3Bucket should not have acl.grants contain [uri = ''http://acs.amazonaws.com/groups/global/AllUsers'' and (premission = ''FULL_CONTROL'' or premission = ''WRITE'')]'
+    remediation: "In the S3 console, select the Permissions tab, and then Bucket Policy. Remove policies for s3:Put* actions for principals '*'. If necessary, modify the policy instead, to limit the access to specific principals. \nThen, select Access Control List, and remove any grants to Write objects to Public (everyone) users."
+    complianceTag: 'Identity and Access Management'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'S3 Bucket without Write permissions for authenticated users'
+    description: 'Misconfigured S3 buckets can leak private information to the entire internet or allow unauthorized data tampering / deletion'
+    severity: High
+    logic: 'S3Bucket should not have acl.grants contain [uri = ''http://acs.amazonaws.com/groups/global/AuthenticatedUsers'' and (premission = ''FULL_CONTROL'' or premission = ''WRITE'')]'
+    remediation: "In the S3 console, select the Permissions tab, and then Bucket Policy. Remove policies for s3:Put* actions for principals '*'. If necessary, modify the policy instead, to limit the access to specific principals. \nThen, select Access Control List, and remove any grants to Write objects to Public (everyone) users."
+    complianceTag: 'Identity and Access Management'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'S3 Buckets should have Server Side Encryption'
+    description: 'Ensure that S3 Buckets have server side encryption at rest enabled to protect sensitive data'
+    severity: High
+    logic: 'S3Bucket should have encryption.serverSideEncryptionRules'
+    remediation: "On the AWS S3 console, for each bucket that failed the rule, navigate to the Properties tab, and select Default encryption. Select an encryption method (AES-256 or AWS-KMS).\n\nReferences\nhttps://docs.aws.amazon.com/AmazonS3/latest/user-guide/default-bucket-encryption.html"
+    complianceTag: 'Encryption and Key Management'
+    templates: [network]
+    level: medium
+-
+    name: 'S3 Buckets with Logging enabled'
+    description: "S3 Bucket Access Logging generates a log that contains access records for each request made to your S3 bucket. An access log record contains details about the request, such as the request type, the resources specified in the request worked, and the time and date the request was processed. It is recommended that bucket access logging be enabled on the CloudTrail S3 bucket.\nBy enabling S3 bucket logging on target S3 buckets, it is possible to capture all events which may affect objects within an target buckets. Configuring logs to be placed in a separate bucket allows access to log information which can be useful in security and incident response workflows."
+    severity: High
+    logic: 'S3Bucket where policy.Statement contain [Principal.Service=''cloudtrail.amazonaws.com''] should have logging.enabled=''true'''
+    remediation: "Turn on Logging feature following these steps:\nGo to the affected bucket > Properties > Server access logging > Enable Logging.\n\nReferences\nAWS guide to enable Server Logging feature:\nhttp://docs.aws.amazon.com/AmazonS3/latest/user-guide/server-access-logging.html\n\nFor remediation, refer to control 2.6 in the CIS Amazon Web Services Foundations Benchmark v1.1.0 document that can be downloaded from https://downloads.cisecurity.org/#/all \nAdditional reference: CIS Amazon Web Services Foundations Benchmark v1.1.2\nhttps://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: advanced
+-
+    name: 'S3 bucket should have Versioning enabled'
+    description: 'Ensure that buckets have versioning enabled so that you can recover objects from accidental deletion or overwrite'
+    severity: Medium
+    logic: 'S3Bucket should have versioning.status=''Enabled'''
+    remediation: "Turn on Versioning feature following these steps:\nGo to the affected bucket > Properties > Versioning > Enable Versioning.\n\nReferences\nhttp://docs.aws.amazon.com/AmazonS3/latest/user-guide/enable-versioning.html"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: advanced
+-
+    name: 'Lambda Functions must have an associated tag'
+    description: 'TAGs are essential elements in AWS, although they are not mandatory, as they allow us to identify resources.'
+    severity: High
+    logic: 'Lambda should have tags'
+    remediation: "Set a TAG Name based on the following nomenclature:\n<product>-<country>-<environment>-<usage>\n\nI.e.: latch-es-pro-frontend-01 or latch-es-qa-e2etests-IOS-12\n\nWe also strongly recommend setting other useful tags such as project, product, owner or environment.\n\nReferences\nPlease read the official guide: https://cdo.telefonica.com/redmine/projects/software-engineering/wiki/Tagging_elements"
+    complianceTag: 'Assets Management'
+    templates: [governance]
+    level: medium
+-
+    name: 'Lambda Functions without Admin Privileges'
+    description: 'Determine the specific permissions needed by your Lambda Functions, and then craft IAM policies for these permissions only, instead of full administrative privileges.There should not be any policies that grant blanket permissions (''*'') to resources. It is recommended and considered a standard security best practice to grant least privileges that is, granting only the permissions required to perform a task'
+    severity: High
+    logic: 'Lambda should not have executionRole.combinedPolicies contain [policyDocument.Statement contain-any [Effect = ''Allow'' and (Resource =''*'' or  Resource contain[$=''*''] ) and  Action contain [''%*%''] or Action  =''*'' or Action contain [$=''*'']]]'
+    remediation: 'For each Lambda Function that failed this rule, navigate to Policies on the IAM console. Search for the policy that failed the rule. Rework the permissions in the policy to grant positive permissions to specific AWS services or actions instead of blanket permissions using ''*''.'
+    complianceTag: 'Identity and Access Management'
+    templates: [network]
+    level: medium
+-
+    name: 'ECS Cluster without Unconnected Agents'
+    description: 'The Amazon ECS container agent associates container instances to your cluster and tells Docker when to start, stop, and query the containers you have specified to run. If the agent is unable to access the service, the container instance is not able to operate as a member of your ECS cluster'
+    severity: High
+    logic: 'EcsCluster should not have containerInstances contain [ agentConnected = false and status != ''DRAINING'' ]'
+    remediation: "The following guide provides ECS agent troubleshooting:\nhttps://aws.amazon.com/premiumsupport/knowledge-center/ecs-agent-disconnected/"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: medium
+-
+    name: 'ECS Cluster should have at least 1 instance registered'
+    description: 'ECS cluster is based on EC2 instances that are registered with the clusters. Cluster without registered instances is idle and cannot execute any tasks'
+    severity: Medium
+    logic: 'EcsCluster should not have containerInstances length() = 0'
+    remediation: "Remediation option 1: Delete the idle ECS Cluster \nRemediation option 2: Register instances with the ECS Cluster \n\nReferences:\nhttps://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_instances.html"
+    complianceTag: 'Cost Saving'
+    templates: [governance, costsaving]
+    level: advanced
+-
+    name: 'ECS Cluster without running tasks'
+    description: 'Amazon ECS allows you to run and maintain a specified number of instances of a task definition simultaneously in an Amazon ECS cluster.Idle ECS services should be removed to reduce container attack surface'
+    severity: Medium
+    logic: 'EcsCluster should not have services contain [ runningCount = 0 ]'
+    remediation: "Remediation option 1: Delete ECS services without running tasks \nhttps://docs.aws.amazon.com/AmazonECS/latest/developerguide/delete-service.html \nRemediation option 2: Create new task definition \nThe following guide explains how to create ECS task definition: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-task-definition.html"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: advanced
+-
+    name: 'ECS Services with public access to ALL ports'
+    description: 'Ports with sensitive services are the primary attack vector for gaining host access or obtaining sensitive information. Therefore, critical services should be restricted to trusted networks only.'
+    severity: High
+    logic: 'EcsService should not have inboundRules with [ scope=''0.0.0.0/0'' and portTo=0]'
+    remediation: "Update Security Group settings to restrict traffic to specific IPs or strict ranges.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
+    complianceTag: 'Network Ports Security'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'VPC subnets with Autoassign Public IP disabled'
+    description: 'A VPC subnet is a part of the VPC, with its own rules for traffic. Subnets with automatic Public IP assignment can inadvertently expose the instances within this subnet to the internet. It is recommended to disable this feature for subnets.'
+    severity: High
+    logic: 'Subnet should not have mapPublicIpOnLaunch=true'
+    remediation: "1. Log in to the AWS console. \n2. In the console, select the specific region . \n3. Navigate to the 'VPC' service. \n4. In the navigation pane, click 'Subnets'. \n5. Select the identified Subnet and Select the option 'Modify auto-assign IP settings' under the Subnet Actions. \n6. Disable the 'Auto-Assign IP' option and save it."
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: advanced
+-
+    name: 'VPC Flowlog enabled'
+    description: 'VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you''ve created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs.VPC Flow Logs provide visibility into network traffic that traverses the VPC and can be used to detect anomalous traffic or insight during security workflows.'
+    severity: Medium
+    logic: 'VPC should have hasFlowLogs=true'
+    remediation: "Perform the following to determine if VPC Flow logs is enabled: \nVia the Management Console: \n1. Sign into the management console \n2. Select Services then VPC \n3. In the left navigation pane, select Your VPCs \n4. Select a VPC \n5. In the right pane, select the Flow Logs tab. \n6. If no Flow Log exists, click Create Flow Log \n7. For Filter, select Reject \n8. Enter in a Role and Destination Log Group \n9. Click Create Log Flow \n10. Click on CloudWatch Logs Group"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: advanced
+-
+    name: 'VPC not used'
+    description: 'It is recommended to delete these VPCs that do not have resources attached to them to reduce AWS cost'
+    severity: Low
+    logic: 'VPC should have subnets length()>=1'
+    remediation: "1. Log in to the AWS console \n2. In the console, select the specific region \n3. Navigate to VPC Dashboard \n4. Click 'Your VPCs' and Select the reported VPC \n5. If you want use reported VPC, Associate subnets to VPC or If you want to delete VPC, click 'Actions' and Select 'Delete VPC' from the dropdown"
+    complianceTag: 'Cost Saving'
+    templates: [governance, costsaving]
+    level: advanced
+-
+    name: 'EIP not used'
+    description: 'It is recommended to delete these EIPs that do not have resources attached to them to reduce AWS cost'
+    severity: Low
+    logic: 'ElasticIP should have associationId'
+    remediation: "1. Log in to the AWS console \n2. In the console, select the specific region \n3. Navigate to EC2 Dashboard \n4. Click 'EIPs' and Select the reported EIP \n5. If you want use reported EIP, Associate instance to EIP or if you want to delete EIP, click 'Actions' and Select 'Delete EIP' from the dropdown"
+    complianceTag: 'Cost Saving'
+    templates: [governance, costsaving]
+    level: advanced
+-
+    name: 'IAM Root account with MFA enabled'
+    description: 'Ensure that MFA is enabled for your root account in order to secure your AWS environment and adhere to IAM security best-practices'
+    severity: High
+    logic: 'IamUser where name like ''%root%'' should have virtualMfaEnabled'
+    remediation: 'Enable MFA access protection for your AWS root account'
+    complianceTag: 'Identity and Access Management'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'IAM Root account without API access keys'
+    description: 'The root account is the most privileged user in an AWS account. AWS Access Keys provide programmatic access to a given AWS account. It is recommended that all access keys associated with the root account be removed. Removing access keys associated with the root account limits vectors by which the account can be compromised. Additionally, removing the root access keys encourages the creation and use of role based accounts that are least privileged.'
+    severity: High
+    logic: 'IamUser where name like ''%root_account%'' should have firstAccessKey.isActive=false and secondAccessKey.isActive=false'
+    remediation: "Perform the following to delete or disable active root access keys being Via the AWS Console \n1. Sign in to the AWS Management Console as Root and open the IAM console at https://console.aws.amazon.com/iam/. \n2. Click on at the top right and select Security Credentials from the drop down list \n3. On the pop out screen Click on Continue to Security Credentials \n4. Click on Access Keys (Access Key ID and Secret Access Key) \n5. Under the Status column if there are any Keys which are Active \n5.1. Click on Make Inactive - (Temporarily disable Key - may be needed again) \n5.2. Click Delete - (Deleted keys cannot be recovered) "
+    complianceTag: 'Identity and Access Management'
+    templates: [network, governance]
+    level: minimum
+-
+    name: 'IAM User logged in console in the last 90 days'
+    description: 'AWS IAM users can access AWS resources using different types of credentials, such as passwords or access keys. It is recommended that all credentials that have been unused in 90 or greater days be removed or deactivated.'
+    severity: Medium
+    logic: 'IamUser where passwordEnabled=''true'' should have passwordLastUsed after(-90, ''days'')'
+    remediation: "Implement AWS CIS Web Services Foundations Benchmark guidelines, section 1.3\nhttps://benchmarks.cisecurity.org/tools2/amazon/CIS_Amazon_Web_Services_Foundations_Benchmark_v1.0.0.pdf"
+    complianceTag: 'Identity and Access Management'
+    templates: [network, governance]
+    level: advanced
