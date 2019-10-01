@@ -16,7 +16,7 @@ OUTPUT_DIR = './_output/'
 
 def read_yml(path):
     with open(path) as x:
-        return yaml.load(x.read())
+        return yaml.load(x.read(), Loader=yaml.FullLoader)
 
 def load_rules(rulesType, vendor):
     path = './{type}/rules/{vendor}.yml'.format(type=rulesType, vendor=vendor)
@@ -32,7 +32,7 @@ def export_ruleset(rulesetType, filename, content):
     filepath = '{directory}/{filename}.json'.format(directory=directory, filename=filename)
 
     if not os.path.exists(directory):
-        os.mkdir(directory)
+        os.makedirs(directory)
     
     with open(filepath, 'w') as f:
         f.write(content)
