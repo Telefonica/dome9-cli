@@ -28,8 +28,8 @@ def load_template(templateType, templateName):
 
 def export_ruleset(rulesetType, filename, content):
     filename = filename.lower().replace(' ', '_')
-    directory = './_output/{type}/'.format(type=rulesetType)
-    filepath = '{directory}{filename}.json'.format(directory=directory, filename=filename)
+    directory = './_output/{type}'.format(type=rulesetType)
+    filepath = '{directory}/{filename}.json'.format(directory=directory, filename=filename)
 
     if not os.path.exists(directory):
         os.mkdir(directory)
