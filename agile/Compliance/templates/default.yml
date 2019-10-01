@@ -5,6 +5,7 @@
   key : minimum
   env :
     - aws
+    - azure
 
 - template:
   type: level
@@ -13,6 +14,7 @@
   key : medium
   env :
     - aws
+    - azure
 
 - template:
   type: level
@@ -21,6 +23,7 @@
   key : advanced
   env :
     - aws
+    - azure
 
 - template:
   type: type
