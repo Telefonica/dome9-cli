@@ -62,8 +62,13 @@ def generator(templateType='Compliance', templateName='default', rulesetKey=None
             # Load environemnt rules (aws, azure)
             env_rules = load_rules(templateType, env)
 
-            if template['type'].lower() == 'level':
-                rules = filter(lambda x: template['key'] == x['level'], env_rules)
+            if template['type'] == 'level':
+                if template['key'] == 'minimum':
+                    rules = filter(lambda x: x['level'] == 'minimum', env_rules)
+                elif template['key'] == 'medium':
+                    rules = filter(lambda x: x['level'] in ['minimum', 'medium'], env_rules)
+                elif template['key'] == 'advanced':
+                    rules = filter(lambda x: x['level'] in ['minimum', 'medium', 'advanced'], env_rules)
             else:
                 rules = filter(lambda x: template['key'] in x['templates'], env_rules)
             
@@ -79,7 +84,7 @@ def generator(templateType='Compliance', templateName='default', rulesetKey=None
                 vend = env
             )
 
-            file = export_ruleset(templateType, ruleset['name'], json.dumps(ruleset))
+            file = export_ruleset(templateType, ruleset['name'], json.dumps(ruleset, indent=4))
             print('[+] {file}'.format(file=file))
 
 
