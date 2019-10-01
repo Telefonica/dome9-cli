@@ -64,13 +64,13 @@ def generator(templateType='Compliance', templateName='default', rulesetKey=None
 
             if template['type'] == 'level':
                 if template['key'] == 'minimum':
-                    rules = filter(lambda x: x['level'] == 'minimum', env_rules)
+                    rules = list(filter(lambda x: x['level'] == 'minimum', env_rules))
                 elif template['key'] == 'medium':
-                    rules = filter(lambda x: x['level'] in ['minimum', 'medium'], env_rules)
+                    rules = list(filter(lambda x: x['level'] in ['minimum', 'medium'], env_rules))
                 elif template['key'] == 'advanced':
-                    rules = filter(lambda x: x['level'] in ['minimum', 'medium', 'advanced'], env_rules)
+                    rules = list(filter(lambda x: x['level'] in ['minimum', 'medium', 'advanced'], env_rules))
             else:
-                rules = filter(lambda x: template['key'] in x['templates'], env_rules)
+                rules = list(filter(lambda x: template['key'] in x['templates'], env_rules))
             
             # Remove excess data
             map(lambda x: x.pop('templates') ,rules)
