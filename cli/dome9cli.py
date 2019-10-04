@@ -46,7 +46,7 @@ class Dome9CLI():
 		'''List AWS Cloud accounts
 		'''
 		data = self._dome9.list_aws_accounts()
-		self._pprint(data, ['id', 'name'])
+		self._pprint(data, ['id', 'name', 'externalAccountNumber'])
 
 	def list_azure_accounts(self):
 		'''List Azure Cloud accounts
@@ -105,7 +105,7 @@ class Dome9CLI():
 		'''
 		ruleset = self._read_file(jsonFile)
 		data = self._dome9.create_ruleset(ruleset)
-		print('Ruleset create with ID: {}'.format(data['id']))
+		print('Ruleset created with ID: {}'.format(data['id']))
 
 	def delete_ruleset(self, id):
 		'''Delete a specific ruleset
@@ -147,7 +147,15 @@ class Dome9CLI():
 		'''List all remediations
 		'''
 		data = self._dome9.list_remediations()
-		self._pprint(data, ['id', 'ruleName', 'cloudBots'])
+		print(json.dumps(data, indent=4))
+		self._pprint(data, ['id', 'ruleName', 'cloudBots', 'comment'])
+
+	def create_remediation(self, remediationFile):
+		'''Create new remediation
+		'''
+		remediation = json.loads(self._read_file(remediationFile))
+		data = self._dome9.create_remediation(remediation)
+		print('Remediation created with ID: {}'.format(data['id']))
 
 	def delete_remediation(self, id):
 		'''Delete a specific remediation

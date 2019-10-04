@@ -1,0 +1,32 @@
+-
+  name: Minimal template remediations
+  ruleset: AWS CDO - LT. Minimum v1.0
+  rules:
+    - EC2 Instance with public access to ALL ports
+    - EC2 Instance with public FTP access
+    - EC2 Instance with public MongoDB access
+    - EC2 Instance with public RDP access
+    - EC2 Instance with public SSH access
+    - EC2 Instance with public MSSQL Database access
+    - EC2 Instance with public MySQL Database access
+    - EC2 Instance with public Oracle Database access
+    - EC2 Instance with public PostgreSQL Database access
+    - EC2 Public AMI
+    - ELB with public MongoDB access
+    - ELB with public RDP access
+    - ELB with public SSH access
+    - ELB with public MSSQL Database access
+    - ELB with public MySQL Database access
+    - ELB with public Oracle Database access
+    - ELB with public PostgreSQL Database access
+    - S3 Bucket without Write permissions for anonymous users
+    - S3 Bucket without Write permissions for authenticated users
+    - ECS Services with public access to ALL ports
+    - IAM Root account with MFA enabled
+    - IAM Root account without API access keys
+  cloudbots:
+    - name: tag_ec2_resource
+      args:
+        key: dome9
+        value: unaccomplished
+

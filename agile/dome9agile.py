@@ -11,77 +11,131 @@ import os
 import fire
 import json
 import yaml
+from dome9 import Dome9
 
-OUTPUT_DIR = './_output/'
+class Agile(object):
 
-def read_yml(path):
-    with open(path) as x:
-        return yaml.load(x.read())
+    def __init__(self, *args, **kwargs):
+        self._dome9 = Dome9()
 
-def load_rules(rulesType, vendor):
-    path = './{type}/rules/{vendor}.yml'.format(type=rulesType, vendor=vendor)
-    return read_yml(path)
 
-def load_template(templateType, templateName):
-    path = './{type}/templates/{name}.yml'.format(type=templateType, name=templateName)
-    return read_yml(path)
+    @classmethod
+    def _read_yml_file(cls, obj, dir, file):
+        path = './{obj}/{dir}/{file}.yml'.format(obj=obj, dir=dir, file=file)
+        with open(path) as x:
+            return yaml.load(x.read())
 
-def export_ruleset(rulesetType, filename, content):
-    filename = filename.lower().replace(' ', '_')
-    directory = './_output/{type}/'.format(type=rulesetType)
-    filepath = '{directory}{filename}.json'.format(directory=directory, filename=filename)
+    @classmethod
+    def _export_result(cls, obj, file, content):
+        filename = file.lower().replace(' ', '_')
+        directory = './_output/{obj}/'.format(obj=obj)
+        filepath = '{dir}{file}.json'.format(dir=directory, file=filename)
 
-    if not os.path.exists(directory):
-        os.mkdir(directory)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+        with open(filepath, 'w') as f:
+            f.write(content)
+
+        print('[+] {file}'.format(file=filepath))
+
+    @classmethod
+    def _load_compliance_ruleset_template(cls, name, desc, vend, type, rules):
+        template = {
+            "id": 0,
+            "name": "{vendor} CDO - {type}T. {name}".format(vendor=vend.upper(), type=type[0].upper(), name=name),
+            "description": desc,
+            "hideInCompliance": True,
+            "cloudVendor": vend,
+            "minFeatureTier": "Advanced",
+            "rules": rules,
+        }
+        return template
+
+    @classmethod
+    def _load_remediation_template(cls, rulesetId, ruleName, comment, cloudbots, ruleLogicHash, accountId=None):
+        template = {
+            "ruleLogicHash": ruleLogicHash,
+            "ruleName": ruleName,
+            "rulesetId": rulesetId,
+            "platform": "aws",
+            "comment": comment,
+            "cloudBots": cloudbots,
+        }
+        if accountId:
+            template["cloudAccountId"]= accountId
+        return template
+
     
-    with open(filepath, 'w') as f:
-        f.write(content)
-    
-    return filepath
+    def generateComplianceRulesets(self, templateName='default', rulesetKey=None):
+        templates = self._read_yml_file('Compliance', 'templates', templateName)
+        for template in templates:
 
-def generate_ruleset_template(name, desc, vend, type, rules):
-    return {
-        "id": 0,
-        "name": "{} CDO - {}T. {}".format(vend.upper(), type[0].upper(), name),
-        "description": desc,
-        "hideInCompliance": True,
-        "cloudVendor": vend,
-        "minFeatureTier": "Advanced",
-        "rules": rules,
-    }
+            if rulesetKey and rulesetKey.lower() != template['key'].lower():
+                continue
 
-def generator(templateType='Compliance', templateName='default', rulesetKey=None):
-    templates = load_template(templateType, templateName)
-    for template in templates:
+            for env in template['env']:
 
-        if rulesetKey and rulesetKey.lower() != template['key'].lower():
-            continue
+                env_rules = self._read_yml_file('Compliance', 'rules', env)
+                if template['type'].lower() == 'level':
+                    rules = filter(lambda x: template['key'] == x['level'], env_rules)
+                else:
+                    rules = filter(lambda x: template['key'] in x['templates'], env_rules)
+                
+                map(lambda x: x.pop('templates') ,rules)
+                map(lambda x: x.pop('level') ,rules)
 
-        for env in template['env']:
+                ruleset = self._load_compliance_ruleset_template(
+                    name = template['name'],
+                    desc = template['desc'],
+                    type = template['type'],
+                    rules = rules,
+                    vend = env)
 
-            # Load environemnt rules (aws, azure)
-            env_rules = load_rules(templateType, env)
+                self._export_result('Compliance', file=ruleset['name'], content=json.dumps(ruleset))
 
-            if template['type'].lower() == 'level':
-                rules = filter(lambda x: template['key'] == x['level'], env_rules)
-            else:
-                rules = filter(lambda x: template['key'] in x['templates'], env_rules)
-            
-            # Remove excess data
-            map(lambda x: x.pop('templates') ,rules)
-            map(lambda x: x.pop('level') ,rules)
 
-            ruleset = generate_ruleset_template(
-                name = template['name'],
-                desc = template['desc'],
-                type = template['type'],
-                rules = rules,
-                vend = env
-            )
+    def generateRemediations(self, templateName='default'):
+        d9accounts = self._dome9.list_aws_accounts()
 
-            file = export_ruleset(templateType, ruleset['name'], json.dumps(ruleset))
-            print('[+] {file}'.format(file=file))
+        templates = self._read_yml_file('Remediation', 'templates', templateName)
+        for template in templates:
+
+            if rulesetKey and rulesetKey.lower() != template['key'].lower():
+                continue
+
+            rules = template['rules']
+            d9ruleset = self._dome9.get_ruleset(name=template['ruleset'])
+            cloudbots = ['{} {}'.format(x['name'], ' '.join(x['args'].values())) for x in template['cloudbots']]
+
+            for rule in rules:
+                d9rule = filter(lambda x: x['name'] == rule, d9ruleset['rules'])[0]
+
+                if template.get('accounts', None):
+                    for account in template['accounts']:
+                        d9account = filter(lambda x: x['externalAccountNumber'] == account, d9accounts)[0]
+
+                        remediation = self._load_remediation_template(
+                            rulesetId=d9ruleset['id'],
+                            ruleName=rule,
+                            comment=template['name'],
+                            cloudbots=cloudbots,
+                            ruleLogicHash=d9rule['logicHash'],
+                            accountId=d9account['id'])
+
+                        filename = '{}_{}_{}'.format(template['name'].replace(' ', '_'), rule.replace(' ', '_'), account)
+                        self._export_result('Remediation', filename , json.dumps(remediation, indent=4))
+
+                else:
+                    remediation = self._load_remediation_template(
+                        rulesetId=d9ruleset['id'],
+                        ruleName=rule,
+                        comment=template['name'],
+                        cloudbots=cloudbots,
+                        ruleLogicHash=d9rule['logicHash'])
+                    filename = '{}_{}'.format(template['name'].replace(' ', '_'), rule.replace(' ', '_'))
+                    self._export_result('Remediation', filename , json.dumps(remediation, indent=4))
 
 
 if __name__ == '__main__':
-    fire.Fire(generator)
+    fire.Fire(Agile())
