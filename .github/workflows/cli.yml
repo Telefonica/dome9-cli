@@ -42,10 +42,4 @@ jobs:
         DOME9_ACCESS_KEY: ${{ secrets.DOME9_ACCESS_KEY }}
         DOME9_SECRET_KEY: ${{ secrets.DOME9_SECRET_KEY }}
       run: |
-        python dome9cli.py list_aws_accounts
-        python dome9cli.py list_azure_accounts
-        python dome9cli.py list_google_accounts
         python dome9cli.py list_rulesets
-        python dome9cli.py list_rules
-        python dome9cli.py list_remediations
-        python dome9cli.py list_exclusions
