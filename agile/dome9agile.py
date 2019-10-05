@@ -101,9 +101,6 @@ class Agile(object):
         templates = self._read_yml_file('Remediation', 'templates', templateName)
         for template in templates:
 
-            if rulesetKey and rulesetKey.lower() != template['key'].lower():
-                continue
-
             rules = template['rules']
             d9ruleset = self._dome9.get_ruleset(name=template['ruleset'])
             cloudbots = ['{} {}'.format(x['name'], ' '.join(x['args'].values())) for x in template['cloudbots']]

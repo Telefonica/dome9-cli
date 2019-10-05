@@ -21,9 +21,10 @@ class Dome9CLI():
 	def __init__(self):
 		self._dome9 = dome9.Dome9()
 
-
-	# 	SYSTEM METHODS
-	# ---------------------
+	
+	# ------------------------------------------
+	# 			  SYSTEM METHODS
+	# ------------------------------------------
 
 	def _read_file(self, file):
 		with open(file, 'r') as f:
@@ -38,9 +39,10 @@ class Dome9CLI():
 			output.append(rows)
 		print(tabulate(output, headers=headers, tablefmt=self._tablefmt))
 
-
-	# 	CLOUD ACCOUNTS
-	# ---------------------
+	
+	# ------------------------------------------
+	# 			  CLOUD ACCOUNTS
+	# ------------------------------------------
 
 	def list_aws_accounts(self):
 		'''List AWS Cloud accounts
@@ -80,9 +82,10 @@ class Dome9CLI():
 		data = self._dome9.get_cloud_account(id)
 		self._pprint([data], ['id', 'name'])
 
-
-	# 		RULESETS
-	# ---------------------
+	
+	# ------------------------------------------
+	# 				  RULESETS
+	# ------------------------------------------
 
 	def list_rulesets(self):
 		'''List compliance rulesets
@@ -137,11 +140,22 @@ class Dome9CLI():
 			"rules": rules,
 		}
 		print(json.dumps(ruleset))
-		
 
 
-	# 	REMEDIATIONS
-	# ---------------------
+	# ------------------------------------------
+	# 			  COMPLIANCE RULES
+	# ------------------------------------------
+
+	def list_rules(self, rulesetId):
+		'''List compliance rulesets
+		'''
+		data = self._dome9.get_ruleset(id=rulesetId)['rules']
+		self._pprint(data, ['name', 'severity', 'complianceTag'])
+
+	
+	# ------------------------------------------
+	# 			  REMEDIATIONS
+	# ------------------------------------------
 
 	def list_remediations(self):
 		'''List all remediations
@@ -165,9 +179,10 @@ class Dome9CLI():
 		data = self._dome9.delete_remediation(id)
 		print('Remediation deleted') if data else ('Resource not deleted')
 
-
-	# 	EXCLUSIONS
-	# ---------------------
+	
+	# ------------------------------------------
+	# 			  EXCLUSIONS
+	# ------------------------------------------
 
 	def list_exclusions(self):
 		'''List all exclusions
@@ -183,9 +198,10 @@ class Dome9CLI():
 		data = self._dome9.delete_exclusion(id)
 		print('Exclusion deleted') if data else ('Resource not deleted')
 
-
-	# 	ASSESSMENTS
-	# ---------------------
+	
+	# ------------------------------------------
+	# 			  ASSESSMENTS
+	# ------------------------------------------
 
 	def run_assessment(self, rulesetId, cloudAccountId):
 		"""Run assessment and get report URL
