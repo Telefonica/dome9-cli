@@ -76,8 +76,8 @@ class Dome9(object):
         return self._request('delete', route, payload)
 
 
-    # ------ Accounts -------
-    # -----------------------
+    # ------------------   Accounts   ------------------
+    # --------------------------------------------------
 
     def get_cloud_account(self, id):
         """Get a Cloud Account
@@ -153,8 +153,8 @@ class Dome9(object):
         return accounts
 
 
-    # ------ Rulesets -------
-    # -----------------------
+    # ------------------ Rulesets ------------------
+    # ----------------------------------------------
 
     def list_rulesets(self):
         """List Compliance Rulesets
@@ -183,7 +183,7 @@ class Dome9(object):
         if id:
             return self._get(route='CompliancePolicy/%s' % str(id))
         elif name:
-            return filter(lambda x: x['name'] == name, self.list_rulesets())
+            return filter(lambda x: x['name'] == name, self.list_rulesets())[0]
 
     def create_ruleset(self, ruleset):
         """Create a Compliance ruleset
@@ -225,8 +225,8 @@ class Dome9(object):
         return self._delete(route='CompliancePolicy/%s' % str(id))
 
 
-    # ------ Remediations -------
-    # ---------------------------
+    # ------------------ Remediations ------------------
+    # --------------------------------------------------
 
     def list_remediations(self):
         """List Remediations
@@ -279,8 +279,8 @@ class Dome9(object):
         return self._delete(route='ComplianceRemediation/%s' % str(id))
 
 
-    # ------ Exclusions -------
-    # -----------------------
+    # ------------------  Exclusions  ------------------
+    # --------------------------------------------------
 
     def list_exclusions(self):
         """List all exclusions
@@ -305,8 +305,8 @@ class Dome9(object):
         return self._delete(route='Exclusion/%s' % str(id))
 
 
-    # ------ Assessment -------
-    # -------------------------
+    # ------------------ Assessments  ------------------
+    # --------------------------------------------------
 
     def run_assessment(self, rulesetId, cloudAccountId, region=None):
         """Run compliance assessments on Cloud Accounts, and get the results
