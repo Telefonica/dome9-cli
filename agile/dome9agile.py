@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-This script is used to split a master ruleset file
-in different files based on audit type or use case.
-
-Copyright (c) Telefonica Digital España, 2019
-"""
-
 import os
 import fire
 import json
@@ -18,6 +11,10 @@ class Agile(object):
     def __init__(self, *args, **kwargs):
         self._dome9 = Dome9()
 
+
+    # ------------------------------------
+    #           PRIVATE METHODS
+    # ------------------------------------
 
     @classmethod
     def _read_yml_file(cls, obj, dir, file):
@@ -66,6 +63,10 @@ class Agile(object):
             template["cloudAccountId"]= accountId
         return template
 
+
+    # ------------------------------------
+    #           PUBLIC METHODS
+    # ------------------------------------
     
     def generateComplianceRulesets(self, templateName='default', rulesetKey=None):
         templates = self._read_yml_file('Compliance', 'templates', templateName)
@@ -132,7 +133,6 @@ class Agile(object):
                         ruleLogicHash=d9rule['logicHash'])
                     filename = '{}_{}'.format(template['name'].replace(' ', '_'), rule.replace(' ', '_'))
                     self._export_result('Remediation', filename , json.dumps(remediation, indent=4))
-
 
 
 if __name__ == '__main__':
