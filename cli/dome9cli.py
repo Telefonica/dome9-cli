@@ -35,7 +35,7 @@ class Dome9CLI():
 		for item in dataset:
 			rows = list()
 			for key in headers:
-				rows.append(item[key].encode('utf-8'))
+				rows.append(str(item[key]).encode('utf-8'))
 			output.append(rows)
 		print(tabulate(output, headers=headers, tablefmt=self._tablefmt))
 
