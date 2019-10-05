@@ -1,34 +1,48 @@
-name: Python application
+name: CLI Workflow
 
-on: [push]
+on:
+  push:
+    paths:
+    - 'cli/**'
 
 jobs:
-  build:
 
+  build:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python: [ '2.*', '3.*' ]
+
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python }}
+
     - name: Install dependencies
-      working-directory: ./agile
+      working-directory: ./cli
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
     - name: Lint with flake8
-      working-directory: ./agile
+      working-directory: ./cli
       run: |
         pip install flake8
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Generate rulesets
-      working-directory: ./agile
+
+    - name: Run commands
+      working-directory: ./cli
       run: |
-        python dome9agile.py
+        python dome9cli.py list_aws_accounts
+        python dome9cli.py list_azure_accounts
+        python dome9cli.py list_google_accounts
+        python dome9cli.py list_rulesets
+        python dome9cli.py list_rules
+        python dome9cli.py list_remediations
+        python dome9cli.py list_exclusions
