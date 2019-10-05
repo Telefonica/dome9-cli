@@ -38,5 +38,8 @@ jobs:
 
     - name: Generate rulesets
       working-directory: ./agile
+      env:
+        DOME9_ACCESS_KEY: ${{ secrets.DOME9_ACCESS_KEY }}
+        DOME9_SECRET_KEY: ${{ secrets.DOME9_SECRET_KEY }}
       run: |
         python dome9agile.py
