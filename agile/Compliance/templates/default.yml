@@ -18,7 +18,7 @@
 
 - template:
   type: level
-  name: Advancedd
+  name: Advanced
   desc: Level-based template of advanced CDO security controls to ensure a high level of security
   key : advanced
   env :

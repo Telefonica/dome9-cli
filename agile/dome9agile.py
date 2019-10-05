@@ -16,7 +16,7 @@ OUTPUT_DIR = './_output/'
 
 def read_yml(path):
     with open(path) as x:
-        return yaml.load(x.read())
+        return yaml.load(x.read(), Loader=yaml.FullLoader)
 
 def load_rules(rulesType, vendor):
     path = './{type}/rules/{vendor}.yml'.format(type=rulesType, vendor=vendor)
@@ -28,11 +28,11 @@ def load_template(templateType, templateName):
 
 def export_ruleset(rulesetType, filename, content):
     filename = filename.lower().replace(' ', '_')
-    directory = './_output/{type}/'.format(type=rulesetType)
-    filepath = '{directory}{filename}.json'.format(directory=directory, filename=filename)
+    directory = './_output/{type}'.format(type=rulesetType)
+    filepath = '{directory}/{filename}.json'.format(directory=directory, filename=filename)
 
     if not os.path.exists(directory):
-        os.mkdir(directory)
+        os.makedirs(directory)
     
     with open(filepath, 'w') as f:
         f.write(content)
@@ -62,10 +62,15 @@ def generator(templateType='Compliance', templateName='default', rulesetKey=None
             # Load environemnt rules (aws, azure)
             env_rules = load_rules(templateType, env)
 
-            if template['type'].lower() == 'level':
-                rules = filter(lambda x: template['key'] == x['level'], env_rules)
+            if template['type'] == 'level':
+                if template['key'] == 'minimum':
+                    rules = list(filter(lambda x: x['level'] == 'minimum', env_rules))
+                elif template['key'] == 'medium':
+                    rules = list(filter(lambda x: x['level'] in ['minimum', 'medium'], env_rules))
+                elif template['key'] == 'advanced':
+                    rules = list(filter(lambda x: x['level'] in ['minimum', 'medium', 'advanced'], env_rules))
             else:
-                rules = filter(lambda x: template['key'] in x['templates'], env_rules)
+                rules = list(filter(lambda x: template['key'] in x['templates'], env_rules))
             
             # Remove excess data
             map(lambda x: x.pop('templates') ,rules)
@@ -79,7 +84,7 @@ def generator(templateType='Compliance', templateName='default', rulesetKey=None
                 vend = env
             )
 
-            file = export_ruleset(templateType, ruleset['name'], json.dumps(ruleset))
+            file = export_ruleset(templateType, ruleset['name'], json.dumps(ruleset, indent=4))
             print('[+] {file}'.format(file=file))
 
 
