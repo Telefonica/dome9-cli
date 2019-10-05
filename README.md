@@ -16,6 +16,8 @@ These are the 3 components developed by us:
 
 ## Dome9 SDK
 
+![](https://github.com/Telefonica/dome9/workflows/Agile%20Workflow/badge.svg)
+
 [Repository](https://github.com/davidmoremad/dome9/) | [Documentation](http://dome9.readthedocs.io/) | [Pypi](https://pypi.org/project/dome9/)
 
 This python package is a temporary development of CDO Telefonica waiting for Dome9 to incorporate new functionalities in 
@@ -32,6 +34,8 @@ Usage:
 
 
 ## Dome9 CLI
+
+![](https://github.com/Telefonica/dome9/workflows/CLI%20Workflow/badge.svg)
 
 [Repository & Documentation](https://github.com/Telefonica/Dome9/tree/master/cli)
 
