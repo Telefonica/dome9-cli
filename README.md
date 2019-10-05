@@ -16,7 +16,6 @@ These are the 3 components developed by us:
 
 ## Dome9 SDK
 
-![](https://github.com/Telefonica/dome9/workflows/Agile%20Workflow/badge.svg)
 
 [Repository](https://github.com/davidmoremad/dome9/) | [Documentation](http://dome9.readthedocs.io/) | [Pypi](https://pypi.org/project/dome9/)
 
@@ -55,6 +54,8 @@ Usage:
 ```
 
 ## Dome9 Agile
+
+![](https://github.com/Telefonica/dome9/workflows/Agile%20Workflow/badge.svg)
 
 [Repository & Documentation](https://github.com/Telefonica/Dome9/tree/master/agile)
 
