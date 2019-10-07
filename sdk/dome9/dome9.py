@@ -152,6 +152,12 @@ class Dome9(object):
         accounts.extend(self.list_kubernetes_accounts())
         return accounts
 
+    def create_aws_account(self, name, secret, roleArn):
+        account = { "vendor": "aws", "name": "test", "credentials": { "type": "RoleBased", "secret": "", "arn": "" }, "fullProtection": False, "allowReadOnly": True, "lambdaScanner": False }
+        account['name'] = name
+        account['credentials']['secret'] = secret
+        account['credentials']['arn'] = roleArn
+        return self._post(route='CloudAccounts', payload=account)
 
     # ------------------ Rulesets ------------------
     # ----------------------------------------------
