@@ -637,3 +637,39 @@
     complianceTag: 'Identity and Access Management'
     templates: [network, governance]
     level: advanced
+-
+    name: 'EFS must have an associated tag'
+    description: 'TAGs are essential elements in AWS, although they are not mandatory, as they allow us to identify resources.'
+    severity: 'High'
+    logic: 'EFS should have tags'
+    remediation: 'Set a TAG Name based on the following nomenclature:\n<product>-<country>-<environment>-<usage>\n\nI.e.: latch-es-pro-frontend-01 or latch-es-qa-e2etests-IOS-12\n\nWe also strongly recommend setting other useful tags such as project, product, owner or environment.\n\nReferences\nPlease read the official guide: https://cdo.telefonica.com/redmine/projects/software-engineering/wiki/Tagging_elements'
+    complianceTag: 'Assets Management'
+    templates: [governance]
+    level: medium
+-
+    name: Route53 domain renewal (7 days before expiration)
+    description: It is recommended that domains be renewed at least 15 days in advance.
+    severity: High
+    logic: Route53Domain should not have expirationTime before(7, 'days')
+    remediation: "Navigate to Route 53 dashboard at https://console.aws.amazon.com/route53/. \nIn the left navigation panel, under Domains, click Registered Domains. \nSelect the relevant domain. \nOn Your Domains 'domain name' page, in the domain name configuration section, check the domain expiration date - next to 'Expires on'. \nIf the selected domain is about to expire within 7 days, continue with the renewal process.\n\nAWS Reference: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-extend.html"
+    complianceTag: 'DNS Management'
+    templates: [governance, application]
+    level: minimum
+-
+    name: Route53 domain renewal (30 days before expiration)
+    description: It is recommended that domains be renewed at least 15 days in advance.
+    severity: Medium
+    logic: Route53Domain should not have expirationTime before(30, 'days')
+    remediation: "Navigate to Route 53 dashboard at https://console.aws.amazon.com/route53/. \nIn the left navigation panel, under Domains, click Registered Domains. \nSelect the relevant domain. \nOn Your Domains 'domain name' page, in the domain name configuration section, check the domain expiration date - next to 'Expires on'. \nIf the selected domain is about to expire within 7 days, continue with the renewal process.\n\nAWS Reference: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-extend.html"
+    complianceTag: 'DNS Management'
+    templates: [governance, application]
+    level: advanced
+-
+    name: Route53 domain expired
+    description: Found expired domain names registered with Route53
+    severity: High
+    logic: Route53Domain should not have expirationTime before(-1, 'minutes')
+    remediation: "Navigate to Route 53 dashboard at https://console.aws.amazon.com/route53/. \nIn the left navigation panel, under Domains, click Registered Domains. \nSelect the relevant domain. \nOn Your Domains 'domain name' page, in domain name configuration section, check the domain expiration date. \n\nAWS Reference: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-extend.html"
+    complianceTag: DNS Management
+    templates: [governance, application]
+    level: minimum
