@@ -5,7 +5,7 @@
     logic: 'SQLDB should have encryption.status=''Enabled'''
     remediation: "Remediation:\nAzure Console\n1. Go to SQL databases\n2. For each DB instance\n3. Click on Transparent data encryption\n4. Set Data encryption to On\n\nDefault Value:\nBy default, Data encryption is set to On.\nReferences:\nhttps://docs.microsoft.com/en-us/sql/relational-databases/security/encryption/transparent-data-encryption-with-azure-sql-database"
     complianceTag: 'Encryption and Key Management'
-    templates: [network, governance]
+    templates: [network, governance, encryption]
     level: medium
 -
     name: 'Ensure that ''Public access level'' is set to Private for blob containers'
@@ -23,7 +23,7 @@
     logic: 'StorageAccount should have httpsOnlyTraffic=true'
     remediation: "Azure Console\n1. Go to Storage Accounts\n2. For each storage account, go to Configuration\n3. Set Secure transfer required to Enabled\n\nDefault Value:\nBy default, Secure transfer required is set to Disabled.\n\nReferences:\n1. https://docs.microsoft.com/en-us/azure/storage/storage-security-guide#encryption-in-transit\n2. https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az_storage_account_list\n3. https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az_storage_account_update"
     complianceTag: 'Encryption and Key Management'
-    templates: [network, governance]
+    templates: [network, governance, encryption]
     level: medium
 -
     name: 'Ensure that SQL server access is restricted from the internet'
@@ -50,7 +50,7 @@
     logic: 'KeyVault should have diagnosticSettings contain [ logs length()>0 ]'
     remediation: "1. Go to Key vaults\n2. For each Key vault\n3. Go to Diagnostic Logs\n4. Click on Turn on diagnostics\n5. Ensure that Archive to a storage account is Enabled\n6. Ensure that AuditEvent is checked and the retention days is set to 180 days or as\nappropriate"
     complianceTag: 'Encryption and Key Management'
-    templates: [governance]
+    templates: [governance, encryption]
     level: advanced
 -
     name: 'Ensure that outbound traffic in network security groups are restricted and no outbound rule allow 0.0.0.0/0'
@@ -510,4 +510,319 @@
     remediation: "Update security group input/entry settings to restrict web port access to specific IPs or as strict a range as possible.\n\nRecommended networks:\nElevenPaths: 2.139.155.201/32, 2.139.155.203/32\nTID: 195,235,92,0/23\nTESA: 81.47.233.32/27, 81.47.233.0/28\nAcens VPN: 217.116.20.4/32\nOctopus > 88.26.193.147/32"
     complianceTag: 'Network Ports Security'
     templates: [network]
+    level: medium
+-
+    name: 'Ensure that container registry has locks'
+    description: 'The value that indicates whether the admin user is enabled. Each container registry includes an admin user account, which is disabled by default. You can enable the admin user and manage its credentials in the Azure portal, or by using the Azure CLI or other Azure tools. All users authenticating with the admin account appear as a single user with push and pull access to the registry. Changing or disabling this account disables registry access for all users who use its credentials.'
+    severity: High
+    logic: 'ContainerRegistry should have properties.adminUserEnabled= false'
+    remediation: "Azure Console\nLog in to your Azure portal\nNavigate to Container Registry\nSelect Overview -> Update\nEnsure that the Admin User is Disabled"
+    complianceTag: 'Resource security'
+    templates: [governance]
+    level: medium
+-
+    name: 'Ensure ''Enforce SSL Connection'' is set to ''Enabled'' for PostgreSQL database server'
+    description: 'Enable SSL connection on PostgreSQL Servers. Rationale: SSL connectivity helps to provide a new layer of security, by connecting database server to client applications using Secure Sockets Layer (SSL). Enforcing SSL connections between database server and client applications helps protect against ''man in the middle'' attacks by encrypting the data stream between the server and application.'
+    severity: High
+    logic: 'PostgreSQL should have sslEnforcement=''Enabled'''
+    remediation: "Azure Console\nLog in to your Azure portal\nGo to Azure Database for PostgreSQL server\nFor each database, click on Connection security\nIn SSL settings.\nClick on ENABLED to Enforce SSL connection"
+    complianceTag: 'Encryption and Key Management'
+    templates: [network, encryption]
+    level: medium
+-
+    name: 'Ensure that KeyVault is in use'
+    description: 'Use the Azure Key Vault to store secrets within the Microsoft Azure environment. Secrets in Azure Key Vault are octet sequences with a maximum size of 25k bytes each.'
+    severity: Low
+    logic: 'KeyVault should have (certificates length() > 0 or keys length() > 0 or secrets length() > 0)'
+    remediation: "Ensure you are using KeyVault to securely store all your keys and secrets."
+    complianceTag: 'Encryption and Key Management'
+    templates: [governance, encryption]
+    level: advanced
+-
+    name: 'Ensure that KeyVault is recoverable - Enable ''Soft Delete'' setting for the KeyVault'
+    description: 'The key vault contains object keys, secrets and certificates. Accidental unavailability of a key vault can cause immediate data loss or loss of security functions (authentication, validation, verification, non-repudiation, etc.) supported by the key vault objects. It is recommended the key vault be made recoverable by enabling the ''Do Not Purge'' and ''Soft Delete'' functions. This is in order to prevent loss of encrypted data including storage accounts, SQL databases, and/or dependent services provided by key vault objects (Keys, Secrets, Certificates) etc., as may happen in the case of accidental deletion by a user or from disruptive activity by a malicious user.'
+    severity: Medium
+    logic: 'KeyVault should have enableSoftDelete=true'
+    remediation: "Enable 'Do not purge' and 'Soft delete' settings."
+    complianceTag: 'Encryption and Key Management'
+    templates: [encryption]
+    level: advanced
+-
+    name: 'Ensure that the expiry date is set on all secrets'
+    description: 'Ensure that all Secrets in Azure Key Vault have an expiry time set.'
+    severity: High
+    logic: 'KeyVault where secrets should have secrets contain [ enabled=true and expires after(1,''days'') ]'
+    remediation: "Go to Key vaults\nFor each Key vault, click on Secrets.\nEnsure that each secret in the vault has EXPIRATION DATE set as appropriate"
+    complianceTag: 'Encryption and Key Management'
+    templates: [governance, encryption]
+    level: advanced
+-
+    name: 'Ensure that the redis cache accepts only SSL connections'
+    description: 'It is recommended that Redis Cache should allow only SSL connections. Note: some Redis tools (like redis-cli) do not support SSL. When using such tools plain connection ports should be enabled.'
+    severity: High
+    logic: 'RedisCache should have enableNonSslPort=false'
+    remediation: "Go to Redis Caches.\nFor each Redis Cache\nClick on Advanced settings\nSet the Allow access only via SSL to 'Yes'\nSelect Save"
+    complianceTag: 'Encryption and Key Management'
+    templates: [encryption, network]
+    level: advanced
+-
+    name: 'Ensure that SQL Server TDE protector is encrypted with BYOK (use your own key)'
+    description: 'TDE with BYOK support provides increased transparency and control over the TDE Protector, increased security with an HSM-backed external service, and promotion of separation of duties. With TDE, data is encrypted at rest with a symmetric key (called the database encryption key) stored in the database or data warehouse distribution. To protect this data encryption key (DEK) in the past, only a certificate that the Azure SQL Service managed could be used. Now, with BYOK support for TDE, the DEK can be protected with an asymmetric key that is stored in the Key Vault. Key Vault is a highly available and scalable cloud-based key store which offers central key management, leverages FIPS 140-2 Level 2 validated hardware security modules (HSMs), and allows separation of management of keys and data, for additional security. Based on business needs or criticality of data/databases hosted a SQL server, it is recommended that the TDE protector is encrypted by a key that is managed by the data owner (BYOK).'
+    severity: Medium
+    logic: 'SQLServer should have encryptionProtectors contain [ serverKey.serverKeyType=''AzureKeyVault'' ]'
+    remediation: "Go to Key vaults\nFor each Key vault, click on Keys.\nSet an appropriate EXPIRATION DATE on all keys."
+    complianceTag: 'Encryption and Key Management'
+    templates: [encryption]
+    level: advanced
+-
+    name: 'Ensure that ''storage service encryption'' is enabled for the file service'
+    description: 'With MFA enabled, when a user signs in to an AWS website, they will be prompted for their user name and password as well as for an authentication code from their AWS MFA device. The root account is the most privileged user in an AWS account. MFA adds an extra layer of protection on top of a user name and password.'
+    severity: High
+    logic: 'StorageAccount should have encryption.services with [ name=''file'' and enabled=true ]'
+    remediation: "Go to Storage Accounts\nFor each storage account, go to Encryption under FILE SERVICE\nSet Storage service encryption to Enabled"
+    complianceTag: 'Encryption and Key Management'
+    templates: [encryption]
+    level: advanced
+-
+    name: 'Ensure that ''storage service encryption'' is enabled for the blob service'
+    description: 'Enable data encryption at rest for blobs. Storage service encryption protects your data at rest. Azure Storage encrypts data when it's written, and automatically decrypts it when it is accessed.'
+    severity: High
+    logic: 'StorageAccount should have encryption.services with [ name=''blob'' and enabled=true ]'
+    remediation: "Go to Storage Accounts\nFor each storage account, go to Encryption under BLOB SERVICE\nSet Storage service encryption to Enabled"
+    complianceTag: 'Encryption and Key Management'
+    templates: [encryption]
+    level: advanced
+-
+    name: 'Ensure the storage account containing the container with activity logs is encrypted with BYOK (use your own key)'
+    description: 'The storage account with the activity log export container is configured to use BYOK (Use Your Own Key). Rationale: Configuring the storage account with the activity log export container to use BYOK (Use Your Own Key) provides additional confidentiality controls on log data as a given user must have read permission on the corresponding storage account and must be granted decrypt permission by the CMK.'
+    severity: Medium
+    logic: 'StorageAccount should have encryption.keyVault with [ keyName !=''null'']'
+    remediation: "In right column, Click service Storage Accounts to access Storage account blade\nClick on the storage account name\nIn Section SETTINGS click Encryption. It will show Storage service encryption configuration pane.\nCheck Use your own key which will expand Encryption Key Settings\nUse option Enter key URI or Select from Key Vault to set up encryption with your own key"
+    complianceTag: 'Encryption and Key Management'
+    templates: [encryption]
+    level: advanced
+-
+    name: 'Ensure Azure Application Gateway Web Application Firewall (WAF) is enabled'
+    description: 'WAF should be enabled to protect your web applications that are running behind the Application Gateway from common threats and vulnerabilities.'
+    severity: Medium
+    logic: 'ApplicationGateway should have firewall.enabled=true'
+    remediation: "Navigate to the Application gateways\nFor each Application gateway\nSelect Web application firewall from the menu\nMake sure that Firewall Status is enabled and that tier is WAF."
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: advanced
+-
+    name: 'Ensure to filter source IPs for Cosmos DB account'
+    description: 'When you access your Azure Cosmos DB account from a computer on the internet, the client IP address or IP address range of the machine must be added to the allowed list of IP addresses for your account.'
+    severity: High
+    logic: 'CosmosDbAccount should have ipRangeFilter'
+    remediation: "Go to Azure CosmoDB\nFor each CosmoDB\nClick on Firewall and virtual networks\nSelect 'Selected Networks'\nUnder Firewall, add IP ranges to allow access from the internet or your on-premises networks"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: medium
+-
+    name: 'Ensure that network watcher is ''Enabled'''
+    description: 'Enable Network Watcher for Azure subscriptions. Rationale: Network diagnostic and visualization tools available with Network Watcher help users understand, diagnose, and gain insights to the network in Azure.'
+    severity: High
+    logic: 'List<NetworkWatcher> should have items'
+    remediation: "Go to Network Watcher\nRight click on the subscription name and click on Enable network watcher in all regions"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: medium
+-
+    name: 'Remove unused network security groups'
+    description: 'Delete all Network Security Groups which are not in use.'
+    severity: Medium
+    logic: 'NetworkSecurityGroup should have networkAssetsStats length()>0'
+    remediation: "Delete all Network Security Group which are not in use."
+    complianceTag: 'Network Security'
+    templates: [network, cost savings]
+    level: medium
+-
+    name: 'Ensure that resource group has ''Lock'' enabled'
+    description: 'Resource Manager Locks allow administrators to lock down Azure resources and prevent deletion or changing of resources. You can set the lock level to CanNotDelete or ReadOnly. In the portal, the locks are called Delete and Read-only respectively. It is recommended to have locks enabled to prevent accidental or malicious change or deletion.'
+    severity: Low
+    logic: 'ResourceGroup should have locks'
+    remediation: "Navigate to the 'Resource groups'\nFor each resource group you want to lock, Select 'Locks' and click 'Add'\nSpecify the lock name and level and save your changes"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: minimum
+-
+    name: 'Ensure entire Azure infrastructure doesn''t have access to Azure SQL Server'
+    description: 'Azure connections must be enabled to allow applications from Azure to connect to your Azure SQL server. When an application from Azure attempts to connect to your database server, the firewall verifies that Azure connections are allowed. A firewall setting with starting and ending address equal to 0.0.0.0 allows these connections. This option configures the firewall to allow all connections from Azure including connections from the subscriptions of other customers. Make to use Firewall VNet rules.Azure connections must be enabled to allow applications from Azure to connect to your Azure SQL server. When an application from Azure attempts to connect to your database server, the firewall verifies that Azure connections are allowed. A firewall setting with starting and ending address equal to 0.0.0.0 allows these connections. This option configures the firewall to allow all connections from Azure including connections from the subscriptions of other customers. Make to use Firewall VNet rules.'
+    severity: High
+    logic: 'SQLServer should have isAzurePubliclyAccessable=false'
+    remediation: "Go to SQL Servers\nFor each SQL Server\nSelect Firewalls and virtual networks\nSet the 'Allow access to Azure services' to OFF\nPress the Add existing virtual network or the Create new virtual network to allow access from"
+    complianceTag: 'Network Security'
+    templates: [network, governance]
+    level: medium
+-
+    name: 'Ensure ''trusted Microsoft services'' is enabled for storage account access'
+    description: 'Some Microsoft services that interact with storage accounts operate from networks that can''t be granted access through network rules. To help this type of service work as intended, allow the set of trusted Microsoft services to bypass the network rules. These services will then use strong authentication to access the storage account. If the Allow trusted Microsoft services exception is enabled, the following services: Azure Backup, Azure Site Recovery, Azure DevTest Labs, Azure Event Grid, Azure Event Hubs, Azure Networking, Azure Monitor and Azure SQL Data Warehouse (when registered in the subscription), are granted access to the storage account.'
+    severity: High
+    logic: 'StorageAccount where (networkRuleSet.bypass=''AzureServices'') should have networkRuleSet.defaultAction=''Allow'''
+    remediation: "Go to Storage Accounts\nFor each storage account, Click on the settings menu called Firewalls and virtual networks.\nEnsure that you have elected to allow access from 'Selected networks'.\nEnable check box for Allow trusted Microsoft services to access this storage account.\nClick Save to apply your changes."
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: medium
+-
+    name: 'Ensure that Azure virtual network is configured with a network security group'
+    description: 'Azure Virtual Network subnets should be associated with Network Security Groups. NSG provides the controls to facilitate a formal process for approving and testing all network connections and changes to the firewall and router configurations. NSG enables better control over network traffic to all resources within a subnet. As a best practice it is recommended to associate an NSG with a subnet to protect your VMs on a subnet-level.'
+    severity: Medium
+    logic: 'StorageAccount where (networkRuleSet.bypass=''AzureServices'') should have networkRuleSet.defaultAction=''Allow'''
+    remediation: "Navigate to the 'Virtual Networks'\nFor Each virtual network\nSelect 'Subnets' from menu and select the subnet you need to modify.\nSelect the Network security group (NSG) you want to associate with the subnet and 'Save' your changes.Go to Storage Accounts\nFor each storage account, Click on the settings menu called Firewalls and virtual networks.\nEnsure that you have elected to allow access from 'Selected networks'.\nEnable check box for Allow trusted Microsoft services to access this storage account.\nClick Save to apply your changes."
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: minimum
+-
+    name: 'Ensure that Azure virtual network peering is connected'
+    description: 'Virtual network peering enables you to connect virtual networks in the same region and across regions (also known as Global VNet Peering) through the Azure backbone network. Once peered, the virtual networks are still managed as separate resources. When a peering configuration is deleted on one virtual network, the other virtual network will report that peering is being disconnected.'
+    severity: Low
+    logic: 'VNet where peerings length() >0 should have peerings contain-all [peeringState=''Connected'']'
+    remediation: "Click 'Virtual Networks', and select the virtual network you would like to delete and reconfigure.\nClick 'Peerings'.\nDelete the peering with 'Disconnected' status\nClick 'Add'\nSpecify the 'Name' and 'Virtual Network' and click OK\nVerify that peering state is 'Initiated'\nRepeat step 4-6 on the other Vnet and verify that the peering state is 'Connected'"
+    complianceTag: 'Network Security'
+    templates: [network]
+    level: advanced
+-
+    name: 'Ensure that auditing is enabled for SQL database'
+    description: 'Enable auditing on SQL databases. Auditing tracks database events and writes them to an audit log in your Azure storage account. It also helps you to maintain regulatory compliance, understand database activity, and gain insight into discrepancies and anomalies that could indicate business concerns or suspected security violations.'
+    severity: Medium
+    logic: 'SQLDB should have auditing.state = ''Enabled'''
+    remediation: "Go to SQL databases\nFor each DB instance\nClick on Auditing & Threat Detection\nSet Auditing to On"
+    complianceTag: 'Monitoring'
+    templates: [application]
+    level: medium
+-
+    name: 'Ensure that ''Threat detection'' is enabled for SQL database'
+    description: 'Enable threat detection on SQL databases. SQL threat detection adds an additional layer of security, which enables customers to detect and respond to potential threats as they occur by providing security alerts on anomalous activities. Users will receive an alert on suspicious database activities, potential vulnerabilities, and SQL injection attacks, as well as anomalous database access patterns. SQL Threat Detection alerts provide details of suspicious activity and recommend actions on how to investigate and mitigate the threat.'
+    severity: Medium
+    logic: 'SQLDB should have threatDetection.state=''Enabled'''
+    remediation: "Go to SQL databases\nFor each DB instance\nClick on Auditing & Threat Detection\nSet Threat Detection to On"
+    complianceTag: 'Monitoring'
+    templates: [application]
+    level: medium
+-
+    name: 'Ensure that ''send alerts to'' is enabled for SQL database'
+    description: 'Configure the email address to which alerts will be sent on detection of anomalous activities on SQL databases. This ensures that any detected anomalous activities are reported as soon as possible, making it more likely the potential risk will be mitigated sooner.'
+    severity: Medium
+    logic: 'SQLDB should have threatDetection.emailToAccountAdmins=''Enabled'''
+    remediation: "Go to SQL databases\nFor each DB instance\nClick on Auditing & Threat Detection\nSet Send alerts to as appropriate"
+    complianceTag: 'Monitoring'
+    templates: [application]
+    level: medium
+-
+    name: 'Ensure that ''email service and co-administrators'' is enabled for SQL database'
+    description: 'Configure the service and co-administrator email addresses to which alerts will be sent on detection of anomalous activities on SQL databases. This ensures that any detected anomalous activities are reported as soon as possible, making it more likely the potential risk will be mitigated sooner.'
+    severity: Low
+    logic: 'SQLDB should have threatDetection.additionalEmails contain-any ['' '']'
+    remediation: "Go to SQL databases\nFor each DB instance\nClick on Auditing & Threat Detection\nEnable Email service and co-administrators"
+    complianceTag: 'Monitoring'
+    templates: [application]
+    level: medium
+-
+    name: 'Ensure that ''audit retention'' is greater than 90 days for SQL database'
+    description: 'SQL Database Audit Retention should be configured to be greater than 90 days. Audit Logs can be used to check for anomalies and give insight into suspected breaches or misuse of information and access.'
+    severity: Low
+    logic: 'SQLDB should have auditing.retentionDays>90 or (state.Enabled=true and days=0)'
+    remediation: "Go to SQL databases\nFor each database\nClick on Auditing & Threat Detection\nSelect Storage Details\nSet Retention (days) setting greater than 90 days\nSelect OK\nSelect Save"
+    complianceTag: 'Monitoring'
+    templates: [application]
+    level: medium
+-
+    name: 'Ensure that a log profile exists'
+    description: 'Enable log profile for exporting activity logs. Rationale: A log profile controls how an activity log is exported. By default, activity logs are retained only for 90 days. Log profiles should be defined so that logs can be exported and stored for a longer duration in order to analyze security activities within an Azure subscription.'
+    severity: High
+    logic: 'List<LogProfile> should have items'
+    remediation: "Go to Activity log\nClick on Export\nConfigure the setting\nClick on Save"
+    complianceTag: 'Logging'
+    templates: [application]
+    level: medium
+-
+    name: 'Ensure that activity log retention is set to 365 days or greater'
+    description: 'Ensure activity log retention is set for 365 days or greater. Rationale: A log profile controls how the activity log is exported and retained. Since the average time to detect a breach is 210 days, the activity log should be retained for 365 days or more in order to have time to respond to any incidents.'
+    severity: Medium
+    logic: 'List<LogProfile> should have items with [properties.retentionPolicy.enabled=''true'' and properties.retentionPolicy.days >= 365] length() >0]'
+    remediation: "Go to Activity log\nSelect Export\nSet Retention (days) is set to 365 or 0\nSelect Save"
+    complianceTag: 'Logging'
+    templates: [application]
+    level: medium
+-
+    name: 'Ensure audit profile captures all the activities'
+    description: 'The log profile should be configured to export all activities from the control/management plane. Rationale: A log profile controls how the activity log is exported. Configuring the log profile to collect logs for the categories "write", "delete" and "action" ensures that all the control/management plane activities performed on the subscription are exported.'
+    severity: Medium
+    logic: 'List<LogProfile> should have items with [ properties.categories contain [$=''Write''] and properties.categories contain[$=''Delete''] and properties.categories contain[$=''Action''] and properties.categories length() = 3] length() > 0'
+    remediation: "Use command: az monitor log-profiles update --name default in order to update existing default log profile."
+    complianceTag: 'Logging'
+    templates: [application]
+    level: advanced
+-
+    name: 'Ensure the log profile captures activity logs for all regions including global'
+    description: 'Configure the log profile to export activities from all Azure supported regions/locations including global. Rationale: A log profile controls how the activity Log is exported. Ensuring that logs are exported from all the Azure supported regions/locations means that logs for potentially unexpected activities occurring in otherwise unused regions are stored and made available for incident response and investigations. Including global region/location in the log profile locations ensures all events from the control/management plane will be exported, as many events in the activity log are global events.'
+    severity: High
+    logic: 'List<LogProfile> should have items groupBy [properties.categories] contain-all[values length() > 34]'
+    remediation: "Use command: az monitor log-profiles update --name default in order to update existing default log profile."
+    complianceTag: 'Logging'
+    templates: [application]
+    level: advanced
+-
+    name: 'Ensure that geo redundant backups is enabled on PostgreSQL'
+    description: 'Azure Database for PostgreSQL provides the flexibility to choose between locally redundant or geo-redundant backup storage in the General Purpose and Memory Optimized tiers. When the backups are stored in geo-redundant backup storage, they are not only stored within the region in which your server is hosted, but are also replicated to a paired data center. This provides better protection and ability to restore your server in a different region in the event of a disaster. The Basic tier only offers locally redundant backup storage.'
+    severity: Medium
+    logic: 'PostgreSQL should have storage.geoRedundantBackup = ''Enabled'''
+    remediation: "Select the Create a resource button (+) in the upper-left corner of the portal\nSelect Databases > Azure Database for PostgreSQL\nSelect the Single server deployment option\nFill out the Basics form required information\nEnsure Backup Redundancy option is Geo_redundant"
+    complianceTag: 'Backup and Disaster Recovery'
+    templates: [application]
+    level: advanced
+-
+    name: 'Redis cache should have a backup'
+    description: 'Replicate Redis Cache server data to another Redis Cache server using geo replication. This feature is only available for Premium tier Redis Cache. From performance point of view, Microsoft recommends that both Redis Caches (Primary and the linked secondary) reside in the same region.'
+    severity: Medium
+    logic: 'RedisCache should have linkedServers contain-any [ linkedRedisCacheServerRole=''Secondary'' ]'
+    remediation: "Go to Redis Caches.\nFor each Redis Cache\nMake sure you have at least 2 Redis Caches in Premium tier.\nClick on Geo-replication\nClick Add cache replication link\nClick the name of the desired secondary cache from the Compatible caches list.\nClick the 3 dots on the right to open the context menu.\nSelect Link as secondary.\nSelect Link."
+    complianceTag: 'Backup and Disaster Recovery'
+    templates: [application]
+    level: medium
+-
+    name: 'Ensure Azure SQL server data replication with fail over groups'
+    description: 'SQL Server data should be replicated to avoid loss of unreplicated data.'
+    severity: Medium
+    logic: 'SQLServer should have failOverGroups length()>0'
+    remediation: "Go to SQL Servers\nFor each SQL Server\nSelect Failover groups\nPress the Add group link on top of the page"
+    complianceTag: 'Backup and Disaster Recovery'
+    templates: [application]
+    level: advanced
+-
+    name: 'Ensure that SQL Server admin is configured with AD authentication'
+    description: 'Use Azure Active Directory Authentication for authentication with SQL Databases. Azure Active Directory authentication is a mechanism of connecting Microsoft Azure SQL Databases and SQL Data Warehouses using identities in an Azure Active Directory (Azure AD). With Azure AD authentication, you can centrally manage the identities of database users and other Microsoft services in one central location.'
+    severity: Medium
+    logic: 'SQLServer should have adAdministrators contain [ name=''ActiveDirectory'' ]'
+    remediation: "Go to SQL servers\nFor each SQL server, click on Active Directory admin\nClick on Set admin\nSelect an admin\nClick Save"
+    complianceTag: 'Identity and Access Management'
+    templates: [governance]
+    level: medium
+-
+    name: 'Avoid using names like ''admin'' for an Azure SQL Server admin account login'
+    description: 'You must designate a Server admin login when you create an Azure SQL server. SQL server creates this account as a login in the master database. Only one such account can exist. This account connects using SQL Server authentication (username and password). It is recommended to avoid using names like 'admin' or 'administrator', which are targeted in brute force dictionary attacks.'
+    severity: Medium
+    logic: 'SQLServer should not have administratorLogin in (''admin'', ''Admin'', ''administrator'', ''Administrator'')'
+    remediation: "This is set when the SQL Server is created. After created, only using external tools connected to the SQL Server, such as SSMS, can be used to alter the user, but it will not change the value in the Portal."
+    complianceTag: 'Identity and Access Management'
+    templates: [governance]
+    level: medium
+-
+    name: 'Ensure that Azure AD admin is configured for SQL Server'
+    description: 'Use Azure Active Directory Authentication for authentication with SQL Database. Rationale: Azure Active Directory authentication is a mechanism to connect to Microsoft Azure SQL Database and SQL Data Warehouse using identities in Azure Active Directory (Azure AD). With Azure AD authentication, identities of database users and other Microsoft services can be managed in one central location. Central ID management provides a single place to manage database users and simplifies permission management. - It provides an alternative to SQL Server authentication. - Helps stop the proliferation of user identities across database servers. - Allows password rotation in a single place. - Customers can manage database permissions using external (AAD) groups. - It can eliminate storing passwords by enabling integrated Windows authentication and other forms of authentication supported by Azure Active Directory. - Azure AD authentication uses contained database users to authenticate identities at the database level. - Azure AD supports token-based authentication for applications connecting to SQL Database. - Azure AD authentication supports ADFS (domain federation) or native user/password authentication for a local Azure Active Directory without domain synchronization. - Azure AD supports connections from SQL Server Management Studio that use Active Directory Universal Authentication, which includes Multi-Factor Authentication (MFA). MFA includes strong authentication with a range of easy verification options - phone call, text message, smart cards with pin, or mobile app notification.'
+    severity: High
+    logic: 'SQLServer should have adAdministrators length()>0'
+    remediation: "Go to SQL servers\nFor each SQL server, click on Active Directory admin\nClick on Set admin\nSelect an admin\nClick Save"
+    complianceTag: 'Identity and Access Management'
+    templates: [governance]
+    level: medium
+-
+    name: 'Avoid using names like ''admin'' for an Azure SQL Server active diretory administrator account'
+    description: 'Configure one Azure Active Directory account, either an individual or Network Security Group account, as an administrator. It is not necessary to configure an Azure AD administrator, but an Azure AD administrator must be configured if you want to use Azure AD accounts to connect to SQL Databases.It is recommended to avoid using names like 'admin' or 'administrator', which are targeted in brute force dictionary attacks.'
+    severity: Medium
+    logic: 'SQLServer should not have adAdministrators contain-any [ login in (''admin'', ''Admin'', ''administrator'', ''Administrator'') ]'
+    remediation: "Go to SQL Servers\nFor each SQL Server\nSelect Active Directory admin\nPress the Set Admin at the top of the page\nSelect the active directory user you want to set as AD Admin for the SQL server.\nPress the Remove admin if not needed."
+    complianceTag: 'Identity and Access Management'
+    templates: [governance]
     level: medium
