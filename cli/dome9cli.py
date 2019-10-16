@@ -114,7 +114,7 @@ class Dome9CLI():
 		ruleset = json.loads(self._read_file(jsonFile))
 		remote_ruleset = filter(lambda x: ruleset['name'] in x['name'], self._dome9.list_rulesets())
 		if remote_ruleset:
-			ruleset['id'] = r['id']
+			ruleset['id'] = remote_ruleset[0]['id']
 			self._dome9.update_ruleset(ruleset)
 			print('Ruleset updated with ID: {}'.format(ruleset['id']))
 		else:
