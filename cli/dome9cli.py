@@ -110,6 +110,16 @@ class Dome9CLI():
 		data = self._dome9.create_ruleset(ruleset)
 		print('Ruleset created with ID: {}'.format(data['id']))
 
+	def update_ruleset(self, jsonFile):
+		ruleset = json.loads(self._read_file(jsonFile))
+		remote_ruleset = filter(lambda x: ruleset['name'] in x['name'], self._dome9.list_rulesets())
+		if remote_ruleset:
+			ruleset['id'] = remote_ruleset[0]['id']
+			self._dome9.update_ruleset(ruleset)
+			print('Ruleset updated with ID: {}'.format(ruleset['id']))
+		else:
+			print('Ruleset "{}" not found'.format(ruleset['name']))
+
 	def delete_ruleset(self, id):
 		'''Delete a specific ruleset
 		Args:
