@@ -5,7 +5,7 @@
     logic: 'SQLDB should have encryption.status=''Enabled'''
     remediation: "Remediation:\nAzure Console\n1. Go to SQL databases\n2. For each DB instance\n3. Click on Transparent data encryption\n4. Set Data encryption to On\n\nDefault Value:\nBy default, Data encryption is set to On.\nReferences:\nhttps://docs.microsoft.com/en-us/sql/relational-databases/security/encryption/transparent-data-encryption-with-azure-sql-database"
     complianceTag: 'Encryption and Key Management'
-    templates: [network, governance, encryption]
+    templates: [network, gobernance, encryption]
     level: medium
 -
     name: 'Ensure that ''Public access level'' is set to Private for blob containers'
@@ -14,7 +14,7 @@
     logic: 'StorageAccount should not have networkRuleSet.defaultAction=''allow'' and networkRuleSet.ipRules isPublic()'
     remediation: "Azure Console:\nFirst, follow Microsoft documentation and created shared access signature tokens for your\nblob containers. Then,\n1. Go to Storage Accounts\n2. For each storage account, go to Containers under BLOB SERVICE\n3. For each container, click Access policy\n4. Set Public access level to Private (no anonymous access)\n\nDefault Value:\nBy default, Public access level is set to Private (no anonymous access) for blob\ncontainers.\n\nReferences:\nhttps://docs.microsoft.com/en-us/azure/storage/blobs/storage-manage-access-toresources"
     complianceTag: 'Network Security'
-    templates: [network, governance]
+    templates: [network, gobernance]
     level: medium
 -
     name: 'Ensure that ''Secure transfer required'' is enabled for Storage Accounts'
@@ -23,7 +23,7 @@
     logic: 'StorageAccount should have httpsOnlyTraffic=true'
     remediation: "Azure Console\n1. Go to Storage Accounts\n2. For each storage account, go to Configuration\n3. Set Secure transfer required to Enabled\n\nDefault Value:\nBy default, Secure transfer required is set to Disabled.\n\nReferences:\n1. https://docs.microsoft.com/en-us/azure/storage/storage-security-guide#encryption-in-transit\n2. https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az_storage_account_list\n3. https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az_storage_account_update"
     complianceTag: 'Encryption and Key Management'
-    templates: [network, governance, encryption]
+    templates: [network, gobernance, encryption]
     level: medium
 -
     name: 'Ensure that SQL server access is restricted from the internet'
@@ -32,7 +32,7 @@
     logic: 'SQLServer should have isPublic=false'
     remediation: "Azure Console\n1. Go to SQL servers\n2. For each SQL server\n3. Click on Firewall / Virtual Networks\n4. Ensure that the firewall rules exist, and no rule has\n- Start IP of 0.0.0.0\n- and End IP of 0.0.0.0\n- or other combinations which allows access to wider public IP ranges\n\nDefault Value:\nBy default, no firewall rules are configured.\n\nReferences:\n1. https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-set-database-firewall-rule-azure-sql-database\n2. https://docs.microsoft.com/en-us/powershell/module/azurerm.sql/get-azurermsqlserverfirewallrule?view=azurermps-5.2.0\n3. https://docs.microsoft.com/en-us/powershell/module/azurerm.sql/set-azurermsqlserverfirewallrule?view=azurermps-5.2.0"
     complianceTag: 'Network Security'
-    templates: [network, governance]
+    templates: [network, gobernance]
     level: minimum
 -
     name: 'Ensure that at least one Network Security Group is attached to all VMs and subnets that are public'
@@ -50,7 +50,7 @@
     logic: 'KeyVault should have diagnosticSettings contain [ logs length()>0 ]'
     remediation: "1. Go to Key vaults\n2. For each Key vault\n3. Go to Diagnostic Logs\n4. Click on Turn on diagnostics\n5. Ensure that Archive to a storage account is Enabled\n6. Ensure that AuditEvent is checked and the retention days is set to 180 days or as\nappropriate"
     complianceTag: 'Encryption and Key Management'
-    templates: [governance, encryption]
+    templates: [gobernance, encryption]
     level: advanced
 -
     name: 'Ensure that outbound traffic in network security groups are restricted and no outbound rule allow 0.0.0.0/0'
@@ -437,7 +437,7 @@
     logic: 'VirtualMachine should have availabilitySet'
     remediation: "To assign Azure Virtual Machine to an availability set please refer to the following document:\n\nhttps://docs.microsoft.com/en-us/azure/virtual-machines/windows/manage-availability#configure-multiple-virtual-machines-in-an-availability-set-for-redundancy"
     complianceTag: 'Backup and Disaster Recovery'
-    templates: [governance]
+    templates: [gobernance]
     level: advanced
 -
     name: 'VirtualMachine with service Cassandra (TCP:7001) is exposed to the entire internet'
@@ -518,7 +518,7 @@
     logic: 'ContainerRegistry should have properties.adminUserEnabled= false'
     remediation: "Azure Console\nLog in to your Azure portal\nNavigate to Container Registry\nSelect Overview -> Update\nEnsure that the Admin User is Disabled"
     complianceTag: 'Resource security'
-    templates: [governance]
+    templates: [gobernance]
     level: medium
 -
     name: 'Ensure ''Enforce SSL Connection'' is set to ''Enabled'' for PostgreSQL database server'
@@ -536,7 +536,7 @@
     logic: 'KeyVault should have (certificates length() > 0 or keys length() > 0 or secrets length() > 0)'
     remediation: "Ensure you are using KeyVault to securely store all your keys and secrets."
     complianceTag: 'Encryption and Key Management'
-    templates: [governance, encryption]
+    templates: [gobernance, encryption]
     level: advanced
 -
     name: 'Ensure that KeyVault is recoverable - Enable ''Soft Delete'' setting for the KeyVault'
@@ -554,7 +554,7 @@
     logic: 'KeyVault where secrets should have secrets contain [ enabled=true and expires after(1,''days'') ]'
     remediation: "Go to Key vaults\nFor each Key vault, click on Secrets.\nEnsure that each secret in the vault has EXPIRATION DATE set as appropriate"
     complianceTag: 'Encryption and Key Management'
-    templates: [governance, encryption]
+    templates: [gobernance, encryption]
     level: advanced
 -
     name: 'Ensure that the redis cache accepts only SSL connections'
@@ -653,7 +653,7 @@
     logic: 'SQLServer should have isAzurePubliclyAccessable=false'
     remediation: "Go to SQL Servers\nFor each SQL Server\nSelect Firewalls and virtual networks\nSet the 'Allow access to Azure services' to OFF\nPress the Add existing virtual network or the Create new virtual network to allow access from"
     complianceTag: 'Network Security'
-    templates: [network, governance]
+    templates: [network, gobernance]
     level: medium
 -
     name: 'Ensure ''trusted Microsoft services'' is enabled for storage account access'
@@ -797,7 +797,7 @@
     logic: 'SQLServer should have adAdministrators contain [ name=''ActiveDirectory'' ]'
     remediation: "Go to SQL servers\nFor each SQL server, click on Active Directory admin\nClick on Set admin\nSelect an admin\nClick Save"
     complianceTag: 'Identity and Access Management'
-    templates: [governance]
+    templates: [gobernance]
     level: medium
 -
     name: 'Avoid using names like ''admin'' for an Azure SQL Server admin account login'
@@ -806,7 +806,7 @@
     logic: 'SQLServer should not have administratorLogin in (''admin'', ''Admin'', ''administrator'', ''Administrator'')'
     remediation: "This is set when the SQL Server is created. After created, only using external tools connected to the SQL Server, such as SSMS, can be used to alter the user, but it will not change the value in the Portal."
     complianceTag: 'Identity and Access Management'
-    templates: [governance]
+    templates: [gobernance]
     level: medium
 -
     name: 'Ensure that Azure AD admin is configured for SQL Server'
@@ -815,7 +815,7 @@
     logic: 'SQLServer should have adAdministrators length()>0'
     remediation: "Go to SQL servers\nFor each SQL server, click on Active Directory admin\nClick on Set admin\nSelect an admin\nClick Save"
     complianceTag: 'Identity and Access Management'
-    templates: [governance]
+    templates: [gobernance]
     level: medium
 -
     name: 'Avoid using names like ''admin'' for an Azure SQL Server active diretory administrator account'
@@ -824,5 +824,5 @@
     logic: 'SQLServer should not have adAdministrators contain-any [ login in (''admin'', ''Admin'', ''administrator'', ''Administrator'') ]'
     remediation: "Go to SQL Servers\nFor each SQL Server\nSelect Active Directory admin\nPress the Set Admin at the top of the page\nSelect the active directory user you want to set as AD Admin for the SQL server.\nPress the Remove admin if not needed."
     complianceTag: 'Identity and Access Management'
-    templates: [governance]
+    templates: [gobernance]
     level: medium
