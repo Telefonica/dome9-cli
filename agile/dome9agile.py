@@ -78,8 +78,13 @@ class Agile(object):
             for env in template['env']:
 
                 env_rules = self._read_yml_file('Compliance', 'rules', env)
-                if template['type'].lower() == 'level':
-                    rules = filter(lambda x: template['key'] == x['level'], env_rules)
+                if template['type'] == 'level':
+                    if template['key'] == 'minimum':
+                        rules = filter(lambda x: x['level'] == 'minimum', env_rules)
+                    elif template['key'] == 'medium':
+                        rules = filter(lambda x: x['level'] in ['minimum', 'medium'], env_rules)
+                    elif template['key'] == 'advanced':
+                        rules = filter(lambda x: x['level'] in ['minimum', 'medium', 'advanced'], env_rules)
                 else:
                     rules = filter(lambda x: template['key'] in x['templates'], env_rules)
                 
