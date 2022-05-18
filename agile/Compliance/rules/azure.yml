@@ -668,7 +668,7 @@
     name: 'Ensure that Azure virtual network is configured with a network security group'
     description: "Azure Virtual Network subnets should be associated with Network Security Groups. NSG provides the controls to facilitate a formal process for approving and testing all network connections and changes to the firewall and router configurations. NSG enables better control over network traffic to all resources within a subnet. As a best practice it is recommended to associate an NSG with a subnet to protect your VMs on a subnet-level."
     severity: Medium
-    logic: 'StorageAccount where (networkRuleSet.bypass=''AzureServices'') should have networkRuleSet.defaultAction=''Allow'''
+    logic: 'VNet where (networkRuleSet.bypass=''AzureServices'') should have networkRuleSet.defaultAction=''Allow'''
     remediation: "Navigate to the 'Virtual Networks'\nFor Each virtual network\nSelect 'Subnets' from menu and select the subnet you need to modify.\nSelect the Network security group (NSG) you want to associate with the subnet and 'Save' your changes.Go to Storage Accounts\nFor each storage account, Click on the settings menu called Firewalls and virtual networks.\nEnsure that you have elected to allow access from 'Selected networks'.\nEnable check box for Allow trusted Microsoft services to access this storage account.\nClick Save to apply your changes."
     complianceTag: 'Network Security'
     templates: [network]
