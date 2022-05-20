@@ -1,5 +1,7 @@
 # Dome9 
 
+[![Build Status][build_status_badge]][build_status_link]
+
 Dome9 is a Cloud Security Posture Management platform that allows to define and visualize the security posture,
 detecting misconfigurations and protecting against identity theft and data loss in cloud environments. 
 Dome9 delivers security capabilities across Amazon Web Services, Microsoft Azure, Google Cloud Platform (GCP) and Kubernetes.
