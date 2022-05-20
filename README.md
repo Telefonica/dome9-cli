@@ -1,7 +1,7 @@
 # Dome9 
 
-![Agile Workflow](https://github.com/github/docs/actions/workflows/agile.yml/badge.svg)
-![CLI Workflow](https://github.com/github/docs/actions/workflows/cli.yml/badge.svg)
+![Agile Workflow](https://github.com/Telefonica/Dome9/actions/workflows/agile.yml/badge.svg)
+![CLI Workflow](https://github.com/Telefonica/Dome9/actions/workflows/cli.yml/badge.svg)
 
 
 Dome9 is a Cloud Security Posture Management platform that allows to define and visualize the security posture,
