@@ -16,12 +16,9 @@ These are the 3 components developed by us:
 
 ## Dome9 SDK
 
-
 [Repository](https://github.com/davidmoremad/dome9/) | [Documentation](http://dome9.readthedocs.io/) | [Pypi](https://pypi.org/project/dome9/)
 
-This python package is a temporary development of CDO Telefonica waiting for Dome9 to incorporate new functionalities in 
-its [official Dome9 SDK for Python](https://github.com/dome9/python-api-sdk). Through this package we can interact with 
-our Dome9 account and connect it to our internal services.
+This package is a temporary development waiting for [official Dome9 SDK for Python](https://github.com/dome9/python-api-sdk) to incorporate new functionalities.
 This package has been registered on Pypi repository so you just have to install it running `pip install dome9` on your preferred console.
 
 Usage:

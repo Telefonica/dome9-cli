@@ -30,12 +30,19 @@ class Dome9CLI():
 		with open(file, 'r') as f:
 			return f.read()
 
+	def _find(self, element, json):
+		keys = element.split('.')
+		rv = json
+		for key in keys:
+			rv = rv[key]
+		return rv
+
 	def _pprint(self, dataset, headers):
 		output = list()
 		for item in dataset:
 			rows = list()
 			for key in headers:
-				rows.append(item[key])
+				rows.append(self._find(key, item))
 			output.append(rows)
 		print(tabulate(output, headers=headers, tablefmt=self._tablefmt))
 
@@ -222,7 +229,20 @@ class Dome9CLI():
 		"""
 		data = self._dome9.run_assessment(rulesetId, cloudAccountId)
 		if data:
-			print('See report on: https://secure.dome9.com/v2/compliance-engine/result/%s' % data['id'])
+			print('\nSee report on: https://secure.dome9.com/v2/compliance-engine/result/%s' % data['id'])
+			print('\n#########################################\n')
+			print('Scan ID: %s' % data['id'])
+			print('Account: %s' % data['locationMetadata']['account']['name'])
+			print('Ruleset: %s' % data['request']['name'])
+			print()
+			print('Total rules: %s' % len(data['tests']))
+			print('Tested Entities:')
+			for k,v in data['testEntities'].items():
+				print('\t%s\t%s' % (k.title().ljust(10), len(v)))
+			print()
+			print('Exam Passed: %s' % data['assessmentPassed'])
+			print('\n#########################################\n')
+			self._pprint(data['tests'], ['rule.name', 'rule.severity', 'testedCount', 'nonComplyingCount'])
 
 
 if __name__ == '__main__':
