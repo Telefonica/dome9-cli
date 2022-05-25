@@ -8,10 +8,10 @@ Dome9 is a Cloud Security Posture Management platform that allows to define and 
 detecting misconfigurations and protecting against identity theft and data loss in cloud environments. 
 Dome9 delivers security capabilities across Amazon Web Services, Microsoft Azure, Google Cloud Platform (GCP) and Kubernetes.
 
-In the CDO area, we have decided to approach cloud protection from an "agile" point of view, defining a methodology
+We have decided to approach cloud protection from an "agile" point of view, defining a methodology
 that allows teams to work comfortably with Dome9, isolating themselves from the logic and complexity of the interface.
 
-These are the 3 components developed by us:
+To approach this way we've developed these items:
 
 * **Dome9 SDK**
 * **Dome9 CLI**
@@ -21,9 +21,6 @@ These are the 3 components developed by us:
 ## Dome9 SDK
 
 [Repository](https://github.com/davidmoremad/dome9/) | [Documentation](http://dome9.readthedocs.io/) | [Pypi](https://pypi.org/project/dome9/)
-
-This package is a temporary development waiting for [official Dome9 SDK for Python](https://github.com/dome9/python-api-sdk) to incorporate new functionalities.
-This package has been registered on Pypi repository so you just have to install it running `pip install dome9` on your preferred console.
 
 Usage:
 ```python

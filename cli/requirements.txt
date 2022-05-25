@@ -1,5 +1,3 @@
 fire
-enum34
-pyyaml
 tabulate
 dome9

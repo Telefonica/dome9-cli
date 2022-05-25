@@ -6,11 +6,11 @@ import json
 import yaml
 from dome9 import Dome9
 
+
 class Agile(object):
 
     def __init__(self, *args, **kwargs):
         self._dome9 = Dome9()
-
 
     # ------------------------------------
     #           PRIVATE METHODS
@@ -30,7 +30,7 @@ class Agile(object):
 
         if not os.path.exists(directory):
             os.makedirs(directory)
-        
+
         with open(filepath, 'w') as f:
             f.write(content)
 
@@ -60,14 +60,13 @@ class Agile(object):
             "cloudBots": cloudbots,
         }
         if accountId:
-            template["cloudAccountId"]= accountId
+            template["cloudAccountId"] = accountId
         return template
-
 
     # ------------------------------------
     #           PUBLIC METHODS
     # ------------------------------------
-    
+
     def generateComplianceRulesets(self, templateName='default', rulesetKey=None):
         templates = self._read_yml_file('Compliance', 'templates', templateName)
         for template in templates:
@@ -87,19 +86,18 @@ class Agile(object):
                         rules = filter(lambda x: x['level'] in ['minimum', 'medium', 'advanced'], env_rules)
                 else:
                     rules = filter(lambda x: template['key'] in x['templates'], env_rules)
-                
-                map(lambda x: x.pop('templates') ,rules)
-                map(lambda x: x.pop('level') ,rules)
+
+                map(lambda x: x.pop('templates'), rules)
+                map(lambda x: x.pop('level'), rules)
 
                 ruleset = self._load_compliance_ruleset_template(
-                    name = template['name'],
-                    desc = template['desc'],
-                    type = template['type'],
-                    rules = rules,
-                    vend = env)
+                    name=template['name'],
+                    desc=template['desc'],
+                    type=template['type'],
+                    rules=rules,
+                    vend=env)
 
                 self._export_result('Compliance', file=ruleset['name'], content=json.dumps(ruleset))
-
 
     def generateRemediations(self, templateName='default'):
         d9accounts = self._dome9.list_aws_accounts()
@@ -127,7 +125,7 @@ class Agile(object):
                             accountId=d9account['id'])
 
                         filename = '{}_{}_{}'.format(template['name'].replace(' ', '_'), rule.replace(' ', '_'), account)
-                        self._export_result('Remediation', filename , json.dumps(remediation, indent=4))
+                        self._export_result('Remediation', filename, json.dumps(remediation, indent=4))
 
                 else:
                     remediation = self._load_remediation_template(
@@ -137,7 +135,7 @@ class Agile(object):
                         cloudbots=cloudbots,
                         ruleLogicHash=d9rule['logicHash'])
                     filename = '{}_{}'.format(template['name'].replace(' ', '_'), rule.replace(' ', '_'))
-                    self._export_result('Remediation', filename , json.dumps(remediation, indent=4))
+                    self._export_result('Remediation', filename, json.dumps(remediation, indent=4))
 
 
 if __name__ == '__main__':
