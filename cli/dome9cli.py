@@ -18,6 +18,7 @@ from tabulate import tabulate
 class Dome9CLI():
 
     _tablefmt = 'github'
+    _export_assessment_filename = 'assessment.json'
 
     def __init__(self):
         self._dome9 = dome9.Dome9()
@@ -29,6 +30,10 @@ class Dome9CLI():
     def _read_file(self, file):
         with open(file, 'r') as f:
             return f.read()
+
+    def _write_file(self, data, file):
+        with open(file, 'w') as f:
+            f.write(data)
 
     def _find(self, element, json):
         keys = element.split('.')
@@ -256,38 +261,44 @@ class Dome9CLI():
     # 			  ASSESSMENTS
     # ------------------------------------------
 
-    def _print_assessment_stats(self, assessment):
-        print('\nSee report on: https://secure.dome9.com/v2/compliance-engine/result/%s' % assessment['id'])
-        print('\n#########################################\n')
-        print('Scan ID: %s' % assessment['id'])
-        print('Account: %s' % assessment['request']['cloudAccountId'])
-        print('Ruleset: %s' % assessment['request']['name'])
-        print()
-        print('Total rules: %s' % len(assessment['tests']))
-        print('Tested Entities:')
-        for k, v in assessment['testEntities'].items():
-            print('\t%s\t%s' % (k.title().ljust(10), len(v)))
-        print()
-        print('Exam Passed: %s' % assessment['assessmentPassed'])
-        print('\n#########################################\n')
+    def _print_assessment_results(self, assessment, stats=True, export=None):
+        if export:
+            print('\n---------------- Export ----------------')
+            self._write_file(json.dumps(assessment, indent=4), self._export_assessment_filename)
+            print('[i] Report saved: ./%s' % self._export_assessment_filename)
+            print('[ ] File size: %i KB' % (sys.getsizeof(json.dumps(assessment, indent=4))/1024))
 
-    def run_assessment(self, rulesetId, cloudAccountId):
+        if stats:
+            print('\n---------------- Stats ----------------')
+            print('[-] Report URL: https://secure.dome9.com/v2/compliance-engine/result/%s' % assessment['id'])
+            print('[-] Report ID: %s' % assessment['id'])
+            print('[-] Account ID: %s' % assessment['request']['cloudAccountId'])
+            print('[-] Ruleset: %s' % assessment['request']['name'])
+            print('[-] Checks executed: %s' % len(assessment['tests']))
+            print('[-] Entities scanned: %s' % len(assessment['testEntities']))
+            for k, v in assessment['testEntities'].items():
+                print('    - %s\t%s' % (k.title().ljust(18), len(v)))
+            print('\n[!] Exam Passed: %s' % assessment['assessmentPassed'])
+
+        print('\n---------------- Results ----------------\n')
+        self._pprint(assessment['tests'], ['rule.name', 'rule.severity', 'testedCount', 'nonComplyingCount'])
+
+    def run_assessment(self, rulesetId, cloudAccountId, stats=True, export=False):
         """Run assessment and get report URL
 
         Args:
             rulesetId (int): ID of the ruleset
             cloudAccountId (str): ID of the cloud account which will be scanned
+            exportFile (bool): Export assessment to JSON file. Defaults to False.
         """
-        data = self._dome9.run_assessment(rulesetId, cloudAccountId)
-        if data:
-            self._print_assessment_stats(data)
-            self._pprint(data['tests'], ['rule.name', 'rule.severity', 'testedCount', 'nonComplyingCount'])
+        assessment = self._dome9.run_assessment(rulesetId, cloudAccountId)
+        if assessment:
+            self._print_assessment_results(assessment, stats, export)
 
-    def get_assessment(self, assessmentId):
-        data = self._dome9.get_assessment(assessmentId)
-        if data:
-            self._print_assessment_stats(data)
-            self._pprint(data['tests'], ['rule.name', 'rule.severity', 'testedCount', 'nonComplyingCount'])
+    def get_assessment(self, assessmentId, stats=True, export=False):
+        assessment = self._dome9.get_assessment(assessmentId)
+        if assessment:
+            self._print_assessment_results(assessment, stats, export)
 
 
 if __name__ == '__main__':
@@ -300,3 +311,6 @@ if __name__ == '__main__':
     # sys.exit()
     except SystemExit as e:
         raise e
+    except Exception as e:
+        print(e)
+        sys.exit(0)
