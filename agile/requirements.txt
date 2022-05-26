@@ -1,4 +1,4 @@
 fire
 enum34
-dome9
+git+https://github.com/davidmoremad/dome9.git@master
 pyyaml
