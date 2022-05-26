@@ -183,8 +183,16 @@ class Dome9CLI():
         """List all remediations
         """
         data = self._dome9.list_remediations()
-        print(json.dumps(data, indent=4))
         self._pprint(data, ['id', 'ruleName', 'cloudBots', 'comment'])
+
+    def get_remediation(self, remediationId):
+        """Get a remediation by ID
+
+        Args:
+            remediationId (int): Id of the remediation
+        """
+        data = self._dome9.get_remediation(remediationId)
+        self._pprint([data], ['id', 'ruleName', 'cloudBots', 'comment'])
 
     def create_remediation(self, remediationFile):
         """Create a new remediation
@@ -214,6 +222,26 @@ class Dome9CLI():
         """
         data = self._dome9.list_exclusions()
         self._pprint(data, ['id', 'cloudAccountId', 'logic', 'comment'])
+
+    def get_exclusion(self, exclusionId):
+        """Get a specific exclusion
+
+        Args:
+            exclusionId (int): Id of the exclusion
+        """
+        data = self._dome9.get_exclusion(exclusionId)
+        print(json.dumps(data, indent=4))
+        self._pprint([data], ['id', 'cloudAccountType', 'cloudAccountId', 'logic', 'comment'])
+
+    def create_exclusion(self, exclusionFile):
+        """Create a new exclusion
+
+        Args:
+            exclusion (str): Absolute or relative path to a JSON file with Dome9 exclusion.
+        """
+        exclusion = json.loads(self._read_file(exclusionFile))
+        data = self._dome9.create_exclusion(exclusion)
+        print('Exclusion created with ID: {}'.format(data['id']))
 
     def delete_exclusion(self, exclusionId):
         """Delete a specific exclusion
