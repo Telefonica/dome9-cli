@@ -172,7 +172,7 @@ class Dome9CLI():
     def list_rules(self, rulesetId):
         """List compliance rulesets
         """
-        data = self._dome9.get_ruleset(id=rulesetId)['rules']
+        data = self._dome9.get_ruleset(rulesetId=rulesetId)['rules']
         self._pprint(data, ['name', 'severity', 'complianceTag'])
 
     # ------------------------------------------
