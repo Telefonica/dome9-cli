@@ -1,7 +1,8 @@
 # Dome9 
 
-![Agile Workflow](https://github.com/Telefonica/Dome9/actions/workflows/agile.yml/badge.svg)
-![CLI Workflow](https://github.com/Telefonica/Dome9/actions/workflows/cli.yml/badge.svg)
+![Agile Workflow](https://github.com/Telefonica/dome9-cli/actions/workflows/agile.yml/badge.svg)
+![CLI Workflow](https://github.com/Telefonica/dome9-cli/actions/workflows/cli.yml/badge.svg)
+![GitHub License](https://img.shields.io/github/license/Telefonica/dome9-cli?style=flat-square&color=blue)
 
 
 Dome9 is a Cloud Security Posture Management platform that allows to define and visualize the security posture,
@@ -32,9 +33,9 @@ Usage:
 
 ## Dome9 CLI
 
-![](https://github.com/Telefonica/dome9/workflows/CLI%20Workflow/badge.svg)
+![](https://github.com/Telefonica/dome9-cli/workflows/CLI%20Workflow/badge.svg)
 
-[Repository & Documentation](https://github.com/Telefonica/Dome9/tree/master/cli)
+[Repository & Documentation](https://github.com/Telefonica/dome9-cli/tree/master/cli)
 
 This Command Line Interface (CLI) is a simple tool that facilitates the daily use and helps enormously to work in agile methodologies.
 This package consumes calls through the Dome9 Python SDK mentioned above so it contains the same methods.
@@ -53,9 +54,9 @@ Usage:
 
 ## Dome9 Agile
 
-![](https://github.com/Telefonica/dome9/workflows/Agile%20Workflow/badge.svg)
+![](https://github.com/Telefonica/dome9-cli/workflows/Agile%20Workflow/badge.svg)
 
-[Repository & Documentation](https://github.com/Telefonica/Dome9/tree/master/agile)
+[Repository & Documentation](https://github.com/Telefonica/dome9-cli/tree/master/agile)
 
 Through this simple script and the CLI we are able to create rulesets dinamically using templates.
 The purpose of this tool is to have just a unique file of rules for each cloud environment (AWS, Azure, GCP & Kubernetes)
