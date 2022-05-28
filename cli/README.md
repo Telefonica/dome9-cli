@@ -12,6 +12,8 @@ For detailed information on this command, run:
 `dome9cli.py --help`
 
 
+test
+
 ## Installation
 
 1. Open the file `dome9cli.py` and copy its content
