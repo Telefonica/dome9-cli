@@ -261,7 +261,7 @@ class Dome9CLI():
     # 			  ASSESSMENTS
     # ------------------------------------------
 
-    def _print_assessment_results(self, assessment, stats=True, export=None):
+    def _print_assessment_results(self, assessment, stats=False, export=None):
         if export:
             print('\n---------------- Export ----------------')
             self._write_file(json.dumps(assessment, indent=4), self._export_assessment_filename)
@@ -283,7 +283,7 @@ class Dome9CLI():
         print('\n---------------- Results ----------------\n')
         self._pprint(assessment['tests'], ['rule.name', 'rule.severity', 'testedCount', 'nonComplyingCount'])
 
-    def run_assessment(self, rulesetId, cloudAccountId, stats=True, export=False):
+    def run_assessment(self, rulesetId, cloudAccountId, stats=False, export=False):
         """Run assessment and get report URL
 
         Args:
@@ -293,12 +293,12 @@ class Dome9CLI():
         """
         assessment = self._dome9.run_assessment(rulesetId, cloudAccountId)
         if assessment:
-            self._print_assessment_results(assessment, stats, export)
+            self._print_assessment_results(assessment, stats=stats, export=export)
 
-    def get_assessment(self, assessmentId, stats=True, export=False):
+    def get_assessment(self, assessmentId, stats=False, export=False):
         assessment = self._dome9.get_assessment(assessmentId)
         if assessment:
-            self._print_assessment_results(assessment, stats, export)
+            self._print_assessment_results(assessment, stats=stats, export=export)
 
 
 if __name__ == '__main__':
