@@ -83,7 +83,7 @@ class Dome9CLI():
         """List all types of cloud accounts
         """
         data = self._dome9.list_cloud_accounts()
-        self._pprint(data, ['id', 'name'])
+        self._pprint(data, ['id', 'name', 'vendor'])
 
     def get_cloud_account(self, accountId):
         """Get a cloud account by ID
